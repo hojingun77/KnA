@@ -1,0 +1,108 @@
+/**
+ * English dictionary
+ * Parallel structure with ko.js — keep in sync.
+ */
+const en = {
+  common: {
+    loading: 'Loading...',
+    error: 'An error occurred.',
+    retry: 'Retry',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    save: 'Save',
+    submit: 'Submit',
+    back: 'Back',
+    close: 'Close',
+  },
+  auth: {
+    login: 'Log In',
+    logout: 'Log Out',
+    signup: 'Sign Up',
+    email: 'Email',
+    password: 'Password',
+    selectCountry: 'Select your home country (required)',
+    countryRequired: 'You must select your home country to complete sign-up.',
+    loginFailed: 'Email or password is incorrect.',
+  },
+  home: {
+    title: 'Home',
+    categories: 'Categories',
+    liveQuestions: 'Trending Questions',
+    noLiveQuestions: 'No questions yet.',
+  },
+  qna: {
+    board: 'Q&A Board',
+    searchPlaceholder: 'Search questions',
+    filter: {
+      all: 'All',
+      open: 'Unanswered',
+      adopted: 'Answered',
+      urgent: 'Urgent',
+    },
+    noResults: 'No questions match your criteria.',
+    answerCount: (n) => `${n} answer${n !== 1 ? 's' : ''}`,
+  },
+  question: {
+    write: 'Ask a Question',
+    category: 'Category',
+    title: 'Title',
+    content: 'Content',
+    titlePlaceholder: 'Enter question title (max 100 characters)',
+    contentPlaceholder: 'Enter question content (max 2,000 characters)',
+    urgent: 'Urgent',
+    attachPhoto: 'Attach Photo',
+    register: 'Post',
+    aiPoints: 'AI-assigned Points',
+    confirmPost: 'Post Question',
+    translateSupport: 'Get Translation Help',
+  },
+  answer: {
+    write: 'Write an Answer',
+    register: 'Post Answer',
+    adopt: 'Accept',
+    adopted: 'Accepted Answer',
+    autoAdopted: 'Auto-accepted',
+    aiVerification: 'AI Reliability Check',
+    translateSupport: 'Get Translation Help',
+  },
+  reward: {
+    title: 'Rewards',
+    myPoints: 'My Points',
+    history: 'Point History',
+    transfer: 'Redeem',
+    giftcards: 'Onnuri Gift Cards',
+    transferComplete: 'Redemption Complete',
+    transferFailed: 'Redemption Failed',
+    insufficientPoints: (n) => `You need ${n} more points.`,
+  },
+  notification: {
+    title: 'Notifications',
+    empty: 'No notifications.',
+    newAnswer: 'A new answer has been posted.',
+    adopted: 'Your answer was accepted and points have been awarded.',
+    transferComplete: 'Your Onnuri Gift Card redemption is complete.',
+    transferFailed: 'Your Onnuri Gift Card redemption failed.',
+  },
+  profile: {
+    title: 'Profile',
+    myQuestions: 'My Questions',
+    myAnswers: 'My Answers',
+    points: 'Point Balance',
+    settings: 'Settings',
+  },
+  report: {
+    title: 'Report',
+    reason: 'Reason',
+    placeholder: 'Select or enter a reason for reporting.',
+    submit: 'Submit Report',
+    submitted: 'Your report has been submitted.',
+    reasons: {
+      misinformation: 'Misinformation',
+      fraud: 'Fraud / Point Abuse',
+      hate: 'Hate / Harassment',
+      etc: 'Other',
+    },
+  },
+};
+
+export default en;

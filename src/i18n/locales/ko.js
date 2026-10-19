@@ -1,0 +1,108 @@
+/**
+ * 한국어 사전 (기본 언어)
+ * 피그마 디자인 확정 후 실제 텍스트로 교체 예정.
+ */
+const ko = {
+  common: {
+    loading: '불러오는 중...',
+    error: '오류가 발생했습니다.',
+    retry: '다시 시도',
+    confirm: '확인',
+    cancel: '취소',
+    save: '저장',
+    submit: '제출',
+    back: '뒤로',
+    close: '닫기',
+  },
+  auth: {
+    login: '로그인',
+    logout: '로그아웃',
+    signup: '회원가입',
+    email: '이메일',
+    password: '비밀번호',
+    selectCountry: '본국가 선택 (필수)',
+    countryRequired: '본국가를 선택해야 가입이 완료됩니다.',
+    loginFailed: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  },
+  home: {
+    title: '홈',
+    categories: '카테고리',
+    liveQuestions: '지금 뜨는 질문',
+    noLiveQuestions: '현재 등록된 질문이 없습니다.',
+  },
+  qna: {
+    board: 'Q&A 게시판',
+    searchPlaceholder: '질문 검색',
+    filter: {
+      all: '전체',
+      open: '미채택',
+      adopted: '채택완료',
+      urgent: '긴급',
+    },
+    noResults: '조건에 맞는 질문이 없습니다.',
+    answerCount: (n) => `답변 ${n}개`,
+  },
+  question: {
+    write: '질문 작성',
+    category: '카테고리',
+    title: '제목',
+    content: '내용',
+    titlePlaceholder: '질문 제목을 입력하세요 (최대 100자)',
+    contentPlaceholder: '질문 내용을 입력하세요 (최대 2,000자)',
+    urgent: '긴급',
+    attachPhoto: '사진 첨부',
+    register: '등록',
+    aiPoints: 'AI 책정 포인트',
+    confirmPost: '게시하기',
+    translateSupport: '번역 지원 받기',
+  },
+  answer: {
+    write: '답변 작성',
+    register: '답변 등록',
+    adopt: '채택',
+    adopted: '채택된 답변',
+    autoAdopted: '자동 채택',
+    aiVerification: 'AI 신뢰도 검증 결과',
+    translateSupport: '번역 지원 받기',
+  },
+  reward: {
+    title: '리워드',
+    myPoints: '보유 포인트',
+    history: '포인트 내역',
+    transfer: '전환',
+    giftcards: '온누리상품권',
+    transferComplete: '전환 완료',
+    transferFailed: '전환 실패',
+    insufficientPoints: (n) => `포인트가 ${n}P 부족합니다.`,
+  },
+  notification: {
+    title: '알림',
+    empty: '알림이 없습니다.',
+    newAnswer: '새 답변이 등록되었습니다.',
+    adopted: '답변이 채택되어 포인트가 적립되었습니다.',
+    transferComplete: '온누리상품권 전환이 완료되었습니다.',
+    transferFailed: '온누리상품권 전환에 실패했습니다.',
+  },
+  profile: {
+    title: '프로필',
+    myQuestions: '내 질문',
+    myAnswers: '내 답변',
+    points: '포인트 잔액',
+    settings: '설정',
+  },
+  report: {
+    title: '신고',
+    reason: '신고 사유',
+    placeholder: '신고 사유를 입력하거나 선택하세요.',
+    submit: '신고 제출',
+    submitted: '신고가 접수되었습니다.',
+    reasons: {
+      misinformation: '오정보',
+      fraud: '사기·포인트 악용',
+      hate: '혐오·괴롭힘',
+      etc: '기타',
+    },
+  },
+};
+
+export default ko;
