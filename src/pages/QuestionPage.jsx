@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { categoryLabel } from '@/constants/demoCategories';
+import { categoryLabel } from '@/constants/categories';
 import { blockQuestion, deleteQuestion, getQuestion, isBlocked, listAttachments } from '@/data/questionRepository';
+import { getDemoUser } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
 
 export default function QuestionPage() {
@@ -10,17 +11,19 @@ export default function QuestionPage() {
   const { t, i18n } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
-  const [question, setQuestion] = useState(null);
+  const [question, setQuestion] = useState(undefined);
   const [attachments, setAttachments] = useState([]);
+  const [author, setAuthor] = useState(null);
   const [menu, setMenu] = useState(false);
   const [report, setReport] = useState(false);
   const [reportedReason, setReportedReason] = useState('');
   const [toast, setToast] = useState('');
-  useEffect(() => { Promise.all([getQuestion(questionId), listAttachments(questionId), isBlocked(user.id, questionId)]).then(([item, files, blocked]) => { if (blocked) { navigate('/qna', { replace: true }); return; } setQuestion(item); setAttachments(files); }); }, [questionId, user.id, navigate]);
+  useEffect(() => { Promise.all([getQuestion(questionId), listAttachments(questionId), isBlocked(user.id, questionId)]).then(async ([item, files, blocked]) => { if (blocked) { navigate('/qna', { replace: true }); return; } setQuestion(item); setAttachments(files); setAuthor(item ? await getDemoUser(item.ownerId) : null); }); }, [questionId, user.id, navigate]);
   function share() { setMenu(false); setToast(t('ui.shared')); setTimeout(() => setToast(''), 2000); }
-  if (!question) return <div className="screen center-message">{t('common.loading')}</div>;
+  if (question === undefined) return <div className="screen center-message">{t('common.loading')}</div>;
+  if (question === null) return <div className="screen center-message"><button onClick={() => navigate('/qna')}>{t('qna.noResults')}</button></div>;
   return <div className="screen question-screen"><header className="plain-header"><button onClick={() => navigate(-1)} aria-label={t('common.back')}>❮</button><h1>{t('qna.board')}</h1><button className="more-button" onClick={() => setMenu(!menu)}>⋮</button></header>
-    <div className="screen-scroll question-scroll"><div className="card-badges"><em>{categoryLabel(question.category, i18n.language)}</em><em className="points-tag">{question.rewardPoints}P</em>{question.urgent && <em>긴급</em>}</div><h2>{question.title}</h2><p className="question-meta">{question.ownerId === user.id ? user.nickname : 'K&A'} · {new Date(question.createdAt).toLocaleDateString(i18n.language)}</p><p className="question-body">{question.body}</p>
+    <div className="screen-scroll question-scroll"><div className="card-badges"><em>{categoryLabel(question.category, i18n.language)}</em><em className="points-tag">{question.rewardPoints}P</em>{question.urgent && <em>{t('qna.filter.urgent')}</em>}</div><h2>{question.title}</h2><p className="question-meta">{author?.nickname ?? user.nickname} · {new Date(question.createdAt).toLocaleDateString(i18n.language)}</p><p className="question-body">{question.body}</p>
       {attachments.map((attachment) => <AttachmentImage key={attachment.id} attachment={attachment} />)}
       {question.ownerId === user.id && <div className="owner-actions"><button onClick={() => navigate(`/qna/${question.id}/edit`)}>{t('ui.edit')}</button><button onClick={async () => { if (window.confirm(t('ui.deleteConfirm'))) { await deleteQuestion(question); navigate('/qna', { replace: true }); } }}>{t('ui.delete')}</button></div>}
       <section className="answer-placeholder"><h3>{t('ui.answers', { count: 0 })}</h3><p>{t('ui.emptyAnswers')}</p></section>

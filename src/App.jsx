@@ -8,6 +8,7 @@ import BoardPage from '@/pages/BoardPage';
 import ComposePage from '@/pages/ComposePage';
 import QuestionPage from '@/pages/QuestionPage';
 import PointsPage from '@/pages/PointsPage';
+import QuestionCompletePage from '@/pages/QuestionCompletePage';
 import { deviceLanguage } from '@/i18n';
 import { ensureDemoData, getDemoUser } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
@@ -63,7 +64,7 @@ function AppRoutes() {
   if (error) return <DeviceFrame><p className="center-message">{t('common.error')}</p></DeviceFrame>;
   if (!user) return <DeviceFrame login><LoginPage /></DeviceFrame>;
 
-  const showNavigation = !location.pathname.startsWith('/qna/new') && !/^\/qna\/[^/]+(?:\/edit)?$/.test(location.pathname);
+  const showNavigation = !location.pathname.startsWith('/qna/new') && !/^\/qna\/[^/]+(?:\/(?:edit|complete))?$/.test(location.pathname);
   return <DeviceFrame>
     <div className="app-shell">
       <Routes>
@@ -72,6 +73,7 @@ function AppRoutes() {
         <Route path="/qna" element={<BoardPage />} />
         <Route path="/qna/new" element={<ComposePage />} />
         <Route path="/qna/:questionId/edit" element={<ComposePage />} />
+        <Route path="/qna/:questionId/complete" element={<QuestionCompletePage />} />
         <Route path="/qna/:questionId" element={<QuestionPage />} />
         <Route path="/reward" element={<PointsPage />} />
         <Route path="/profile" element={<div className="profile-page"><h1>{t('profile.title')}</h1><p>{user.nickname}</p><button onClick={async () => { setUser(null); await i18n.changeLanguage(deviceLanguage); navigate('/login', { replace: true }); }}>{t('auth.logout')}</button></div>} />

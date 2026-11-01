@@ -5,7 +5,7 @@ import { getPointOverview } from '@/data/demoRepository';
 import { listQuestions } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
 import { DEMO_USERS } from '@/data/demoAccounts';
-import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/demoCategories';
+import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 
 /**
  * 홈 화면

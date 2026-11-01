@@ -5,6 +5,9 @@ import { authenticateDemo } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
 import logo from '@/assets/figma/login-logo.svg';
 import wordmark from '@/assets/figma/login-wordmark.svg';
+import kakao from '@/assets/figma/kakao-icon.svg';
+import google from '@/assets/figma/google-icon.svg';
+import apple from '@/assets/figma/apple-icon.svg';
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
@@ -41,6 +44,6 @@ export default function LoginPage() {
     </form>
     <div className="login-links"><span>{t('demo.forgot')}</span><span>{t('auth.signup')}</span></div>
     <div className="login-divider"><span>{t('demo.or')}</span></div>
-    <div className="social-buttons" aria-hidden="true"><div className="social-kakao">● &nbsp; 카카오로 로그인</div><div><strong className="google-g">G</strong> Goole로 로그인</div><div><strong className="apple-mark">●</strong> Apple로 로그인</div></div>
+    <div className="social-buttons" aria-hidden="true"><div className="social-kakao"><img src={kakao} alt="" />{t('ui.loginKakao')}</div><div><img src={google} alt="" />{t('ui.loginGoogle')}</div><div><img src={apple} alt="" />{t('ui.loginApple')}</div></div>
   </main>;
 }
