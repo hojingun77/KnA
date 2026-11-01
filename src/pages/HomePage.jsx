@@ -6,12 +6,8 @@ import { listQuestions } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
 import { DEMO_USERS } from '@/data/demoAccounts';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
+import BrandHeader from '@/components/layout/BrandHeader';
 
-/**
- * 홈 화면
- * 기획: 8개 주요 카테고리 + 지금 뜨는 질문 목록
- * 현재: 셋팅 확인용 더미 UI (피그마 와이어프레임 확정 후 실제 구현)
- */
 export default function HomePage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -22,7 +18,7 @@ export default function HomePage() {
     Promise.all([listQuestions(user.id), getPointOverview(user.id)]).then(([items, overview]) => { setQuestions(items); setPoints(overview); });
   }, [user.id]);
   return <div className="screen home-screen">
-    <header className="brand-header"><strong>K&A</strong><div><button onClick={() => navigate('/profile')} aria-label={t('nav.profile')}>♙</button><button aria-label={t('notification.title')}>♧</button></div></header>
+    <BrandHeader />
     <div className="screen-scroll home-scroll">
       <button className="search-bar" onClick={() => navigate('/qna')}>⌕ &nbsp; {t('demo.search')}</button>
       <button className="points-banner" onClick={() => navigate('/reward')}><span>{t('demo.myPoints')}<strong>{(points?.balance ?? 1000).toLocaleString()}P</strong><small>{points?.snapshot ? t('ui.monthly') : ''}</small></span><span className="banner-link">{t('reward.transfer')} ❯</span></button>

@@ -112,3 +112,46 @@ button { cursor: pointer; }
 .report-options { display: grid; gap: 5px; margin-top: 20px; }.report-options button { padding: 13px; text-align: left; border: 1px solid #eee; border-radius: 9px; background: white; }.report-options button.selected { border-color: #5a6da9; }
 .complete-body { padding: 65px 22px 30px; text-align: center; }.complete-body>img { width: 80px; height: 80px; margin: 0 auto 10px; }.complete-body>small { display: block; color: #2767cc; font-weight: 700; }.complete-body>h1 { font-size: 25px; margin: 4px 0 8px; }.complete-body>p { color: #7c7a88; font-size: 14px; line-height: 1.5; }.complete-reward { margin-top: 26px; padding: 20px 15px 14px; background: linear-gradient(130deg,#faf5f9,#eff0fb); border: 1px solid #e6e4ec; border-radius: 20px; }.complete-reward>span { color: #8a94a3; font-size: 12px; }.complete-reward>strong { display: block; font-size: 43px; line-height: 1.2; margin: 5px 0 16px; }.complete-reward>div { display: flex; justify-content: space-around; }.complete-reward>div span { display: grid; gap: 6px; color: #8a94a3; font-size: 12px; }.complete-reward b { color: #1d1b26; font-size: 14px; }.complete-reward>p { border-top: 1px solid #e6e4ec; padding-top: 12px; margin-top: 14px; font-size: 12px; color: #4b5563; }.complete-body .complete-note { margin: 18px 18px 12px; font-size: 12px; }.complete-body>.primary-action,.complete-body>.cancel-action { width: 100%; height: 56px; }.complete-body>.cancel-action { margin-top: 12px; }
 @media(max-width:393px){.device-frame{transform-origin:top left;transform:scale(calc(100vw / 393));}.device-stage{display:block;}}
+
+/* Figma 상단바와 다국어 카테고리 */
+.status-signals { display: block; width: 56px; height: 18px; }
+.status-signals svg { width: 56px; height: 18px; }
+.brand-header .brand-home { padding: 0; font-size: 24px; font-weight: 500; line-height: 1.2; }
+.brand-header .header-actions { display: flex; align-items: center; gap: 10px; }
+.brand-header .header-actions button { display: grid; place-items: center; width: 26px; height: 26px; padding: 0; }
+.brand-header .header-actions svg { width: 22px; height: 22px; }
+.compose-subbar { height: 54px; padding: 8px 14px 5px; display: flex; align-items: center; gap: 8px; }
+.compose-subbar button { width: 26px; height: 36px; border: 0; background: none; color: #485367; font-size: 22px; }
+.compose-subbar h1 { font-size: 20px; font-weight: 700; }
+.compose-screen .compose-form { height: calc(100% - 136px); padding-top: 0; }
+.compose-screen .compose-form>label:first-child { margin-top: 0; }
+.compose-categories { row-gap: 8px; }
+.compose-vi .compose-categories button { min-width: 0; overflow: hidden; gap: 2px; padding: 4px 2px; font-size: 12px; letter-spacing: -.025em; }
+.compose-vi .compose-categories img { flex: 0 0 14px; width: 14px; height: 14px; }
+.notification-empty { margin: 32px 20px; text-align: center; color: #8a94a3; }
+.profile-content { padding: 20px 18px 120px; }
+.profile-content h1 { font-size: 20px; margin: 0 0 18px; }
+.profile-card { display: flex; align-items: center; gap: 14px; padding: 6px 0 20px; border-bottom: 1px solid #e5e9f0; }
+.profile-avatar { display: grid; place-items: center; flex: 0 0 64px; width: 64px; height: 64px; border-radius: 50%; background: #f47b85; color: #fff; }
+.profile-avatar svg { width: 32px; height: 32px; }
+.profile-card strong, .profile-card span:last-child { display: block; }
+.profile-card strong { font-size: 20px; }
+.profile-card div span { color: #8a94a3; font-size: 14px; margin-top: 3px; }
+.profile-row { display: flex; justify-content: space-between; width: 100%; padding: 18px 2px; border: 0; border-bottom: 1px solid #e5e9f0; background: #fff; text-align: left; font-size: 16px; }
+.profile-row span { font-size: 22px; color: #8a94a3; }
+.profile-logout { margin-top: 22px; padding: 10px 2px; border: 0; background: none; color: #b21e3e; font-size: 16px; }
+
+/* 제공된 HTML 목업의 팝업, 시트, 토스트, 완료 모션 */
+.bottom-nav .bottom-add { top: 0; bottom: auto; left: 166px; width: 61px; height: 61px; border-radius: 20px; background: linear-gradient(135deg, #d8222e 10%, #5f94e1 90%); color: #fff; display: grid; place-items: center; transition: transform .2s; }
+.bottom-nav .bottom-add::before { content: '+'; font-size: 46px; font-weight: 300; line-height: 1; transform: translateY(-2px); }
+.bottom-nav .bottom-add.open { transform: rotate(45deg); }
+.choose-overlay button { animation: mock-pop .22s ease-out; }
+.conversion-sheet { animation: mock-up .22s ease-out; }
+.toast { animation: mock-up .2s ease-out, fade-toast 2.5s forwards; }
+.complete-body { position: relative; }
+.complete-confetti { position: absolute; top: 12px; left: 0; right: 0; height: 150px; pointer-events: none; }
+.complete-confetti i { position: absolute; top: 0; width: 10px; height: 10px; border-radius: 50%; opacity: 0; animation: mock-fall 1.9s cubic-bezier(.25,.6,.45,1) both; }
+@keyframes mock-pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes mock-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes mock-fall { 0% { transform: translateY(-40px) rotate(0); opacity: 0; } 12% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(240px) rotate(300deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .toast, .complete-confetti i { animation: none; transition: none; } .complete-confetti i { display: none; } }

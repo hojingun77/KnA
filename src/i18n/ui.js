@@ -2,7 +2,7 @@ export const ui = {
   ko: {
     registered: '등록 완료', questionPosted: '질문이 게시되었어요', defaultRewardNotice: '기본 리워드가 적용되었어요.', fixedReward: '책정된 리워드', basicReward: '기본 리워드', defaultRewardReason: 'AI 분류 없이 기본 리워드를 적용했어요.', autoAdoptionNotice: '답변이 달리면 알려드릴게요. 7일 동안 채택하지 않으면 유효한 AI 평가의 최고 점수 답변이 자동 채택돼요.', viewQuestion: '내 질문 보기',
     loginKakao: '카카오로 로그인', loginGoogle: 'Google로 로그인', loginApple: 'Apple로 로그인', editRewardHint: '등록할 때 확정된 보상은 수정 후에도 유지돼요.',
-    more: '더보기', monthly: '이번 달 +400P · 채택 3회', answers: '답변 {{count}}',
+    more: '더보기', monthly: '이번 달 +400P · 채택 3회', answers: '답변 {{count}}', noNotifications: '새 알림이 없습니다.',
     titlePlaceholder: '무엇이 궁금한가요?', bodyPlaceholder: '상황을 구체적으로 적을수록 좋은 답변이 옵니다.',
     rewardHint: '리워드는 옵션에 따라 자동 책정돼요 · 기본 100P / 긴급 150P', post: '질문 등록하기',
     required: '제목과 내용을 입력해주세요.', uploadError: 'JPEG, PNG, WebP 사진만 20개까지 첨부할 수 있습니다. 개별 10MiB, 합계 50MiB 이하로 선택해주세요.',
@@ -16,7 +16,7 @@ export const ui = {
   en: {
     registered: 'Posted', questionPosted: 'Your question is live', defaultRewardNotice: 'The default reward has been applied.', fixedReward: 'Reward', basicReward: 'Base reward', defaultRewardReason: 'The base reward was applied without AI classification.', autoAdoptionNotice: 'We will let you know when answers arrive. After 7 days, a valid highest-rated answer may be accepted automatically.', viewQuestion: 'View my question',
     loginKakao: 'Log in with Kakao', loginGoogle: 'Log in with Google', loginApple: 'Log in with Apple', editRewardHint: 'The reward set when posted stays the same after edits.',
-    more: 'More', monthly: '+400P this month · 3 accepted', answers: '{{count}} answers',
+    more: 'More', monthly: '+400P this month · 3 accepted', answers: '{{count}} answers', noNotifications: 'No new notifications.',
     titlePlaceholder: 'What would you like to ask?', bodyPlaceholder: 'More detail helps you get a better answer.',
     rewardHint: 'Rewards are set automatically · Standard 100P / Urgent 150P', post: 'Post question',
     required: 'Enter a title and details.', uploadError: 'Up to 20 JPEG, PNG or WebP images; 10 MiB each and 50 MiB total.',
@@ -30,7 +30,7 @@ export const ui = {
   vi: {
     registered: 'Đã đăng', questionPosted: 'Câu hỏi đã được đăng', defaultRewardNotice: 'Đã áp dụng điểm thưởng mặc định.', fixedReward: 'Điểm thưởng', basicReward: 'Điểm cơ bản', defaultRewardReason: 'Đã áp dụng điểm cơ bản khi chưa có phân loại AI.', autoAdoptionNotice: 'Chúng tôi sẽ thông báo khi có câu trả lời. Sau 7 ngày, câu trả lời có điểm AI hợp lệ cao nhất có thể được tự động chọn.', viewQuestion: 'Xem câu hỏi',
     loginKakao: 'Đăng nhập với Kakao', loginGoogle: 'Đăng nhập với Google', loginApple: 'Đăng nhập với Apple', editRewardHint: 'Điểm thưởng đã xác định khi đăng sẽ không đổi sau khi sửa.',
-    more: 'Xem thêm', monthly: '+400P tháng này · 3 câu được chọn', answers: '{{count}} câu trả lời',
+    more: 'Xem thêm', monthly: '+400P tháng này · 3 câu được chọn', answers: '{{count}} câu trả lời', noNotifications: 'Không có thông báo mới.',
     titlePlaceholder: 'Bạn muốn hỏi điều gì?', bodyPlaceholder: 'Mô tả chi tiết để nhận câu trả lời tốt hơn.',
     rewardHint: 'Điểm tự động · Thường 100P / Khẩn cấp 150P', post: 'Đăng câu hỏi',
     required: 'Vui lòng nhập tiêu đề và nội dung.', uploadError: 'Tối đa 20 ảnh JPEG, PNG hoặc WebP; mỗi ảnh 10 MiB, tổng 50 MiB.',
@@ -44,7 +44,7 @@ export const ui = {
   'zh-CN': {
     registered: '发布成功', questionPosted: '问题已发布', defaultRewardNotice: '已应用默认奖励。', fixedReward: '奖励积分', basicReward: '基本奖励', defaultRewardReason: '尚未使用AI分类，已应用基本奖励。', autoAdoptionNotice: '收到回答后会通知您。7天后，具有有效AI评分的最高分回答可能被自动采纳。', viewQuestion: '查看我的问题',
     loginKakao: '使用 Kakao 登录', loginGoogle: '使用 Google 登录', loginApple: '使用 Apple 登录', editRewardHint: '发布时确定的奖励在修改后保持不变。',
-    more: '查看更多', monthly: '本月 +400P · 被采纳3次', answers: '{{count}}条回答',
+    more: '查看更多', monthly: '本月 +400P · 被采纳3次', answers: '{{count}}条回答', noNotifications: '暂无新通知。',
     titlePlaceholder: '您想了解什么？', bodyPlaceholder: '描述越详细，越容易获得有用的回答。',
     rewardHint: '奖励积分自动确定 · 普通100P / 紧急150P', post: '发布问题',
     required: '请输入标题和内容。', uploadError: '最多20张JPEG、PNG或WebP图片；单张10 MiB，总计50 MiB。',

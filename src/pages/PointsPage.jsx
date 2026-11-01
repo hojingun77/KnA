@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getPointOverview } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
+import BrandHeader from '@/components/layout/BrandHeader';
 
 export default function PointsPage() {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export default function PointsPage() {
     if (!Number.isSafeInteger(numeric) || numeric < 1000 || numeric % 1000 !== 0 || numeric > overview.balance) { setError(t('demo.invalidAmount')); return; }
     setConvert(false); setError(''); setToast(t('demo.notice')); setTimeout(() => setToast(''), 2500);
   }
-  return <div className="screen points-screen"><header className="brand-header"><strong>K&A</strong></header><div className="points-toolbar"><button onClick={() => navigate('/home')} aria-label={t('common.back')}>❮</button><span>⋮</span></div><div className="screen-scroll points-scroll">
+  return <div className="screen points-screen"><BrandHeader /><div className="points-toolbar"><button onClick={() => navigate('/home')} aria-label={t('common.back')}>❮</button><span>⋮</span></div><div className="screen-scroll points-scroll">
     <button className="points-banner" onClick={() => setConvert(true)}><span>{t('demo.myPoints')}<strong>{(overview?.balance ?? 1000).toLocaleString()}P</strong><small>{overview?.snapshot ? t('ui.monthly') : ''}</small></span><span className="banner-link">{t('reward.transfer')} ❯</span></button>
     <div className="information-banner">ⓘ &nbsp; {t('ui.pointNotice')}</div>
     <h2>{t('demo.history')}</h2>

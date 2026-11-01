@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 import { createQuestion, getQuestion, listAttachments, updateQuestion } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
+import BrandHeader from '@/components/layout/BrandHeader';
 
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -44,7 +45,7 @@ export default function ComposePage() {
     } catch { setError(t('common.error')); }
     finally { setBusy(false); }
   }
-  return <div className="screen compose-screen"><header className="plain-header"><button onClick={() => navigate(-1)} aria-label={t('common.back')}>❮</button><h1>{t('question.write')}</h1></header><form className="compose-form" onSubmit={submit}>
+  return <div className={`screen compose-screen${i18n.language === 'vi' ? ' compose-vi' : ''}`}><BrandHeader /><header className="compose-subbar"><button onClick={() => navigate(-1)} aria-label={t('common.back')}>❮</button><h1>{t('question.write')}</h1></header><form className="compose-form" onSubmit={submit}>
     <label>{t('question.category')}</label><div className="compose-categories">{CATEGORIES.map(([id]) => <button key={id} type="button" className={category === id ? 'selected' : ''} onClick={() => setCategory(id)}><img src={CATEGORY_ICONS[id]} alt="" />{categoryLabel(id, i18n.language)}</button>)}</div>
     <label htmlFor="question-title">{t('question.title')}</label><input id="question-title" maxLength={100} value={title} onChange={(event) => setTitle(event.target.value)} placeholder={t('ui.titlePlaceholder')} />
     <label htmlFor="question-body">{t('question.content')}</label><textarea id="question-body" maxLength={2000} value={body} onChange={(event) => setBody(event.target.value)} placeholder={t('ui.bodyPlaceholder')} />
