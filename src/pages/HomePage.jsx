@@ -1,5 +1,11 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CATEGORIES } from '@/constants/categories';
+import { useNavigate } from 'react-router-dom';
+import { getPointOverview } from '@/data/demoRepository';
+import { listQuestions } from '@/data/questionRepository';
+import useAuthStore from '@/store/authStore';
+import { DEMO_USERS } from '@/data/demoAccounts';
+import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/demoCategories';
 
 /**
  * 홈 화면
@@ -7,48 +13,22 @@ import { CATEGORIES } from '@/constants/categories';
  * 현재: 셋팅 확인용 더미 UI (피그마 와이어프레임 확정 후 실제 구현)
  */
 export default function HomePage() {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-col h-full bg-surface">
-      {/* 헤더 */}
-      <div className="px-4 pt-4 pb-2">
-        <h1 className="text-xl font-bold text-ink">{t('home.title')}</h1>
-      </div>
-
-      {/* 카테고리 */}
-      <div className="px-4 py-2">
-        <h2 className="text-sm font-medium text-ink-secondary mb-3">{t('home.categories')}</h2>
-        <div className="grid grid-cols-4 gap-2">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              className="flex flex-col items-center justify-center p-2 rounded-xl bg-surface-muted border border-border text-center"
-            >
-              <span className="text-2xl mb-1">📌</span>
-              <span className="text-xs font-medium text-ink leading-tight">{cat.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 지금 뜨는 질문 */}
-      <div className="px-4 py-2 flex-1">
-        <h2 className="text-sm font-medium text-ink-secondary mb-3">{t('home.liveQuestions')}</h2>
-        <div className="flex flex-col gap-2">
-          {/* 더미 카드 */}
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-3 rounded-xl bg-surface-card border border-border">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-50 text-primary-600 font-medium">비자·체류</span>
-                <span className="text-xs text-ink-secondary">방금 전</span>
-              </div>
-              <p className="text-sm font-medium text-ink">더미 질문 {i}: 비자 연장 신청은 어떻게 하나요?</p>
-              <p className="text-xs text-ink-secondary mt-1">{t('qna.answerCount', { count: 0 })}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const [questions, setQuestions] = useState([]);
+  const [points, setPoints] = useState(null);
+  useEffect(() => {
+    Promise.all([listQuestions(user.id), getPointOverview(user.id)]).then(([items, overview]) => { setQuestions(items); setPoints(overview); });
+  }, [user.id]);
+  return <div className="screen home-screen">
+    <header className="brand-header"><strong>K&A</strong><div><button onClick={() => navigate('/profile')} aria-label={t('nav.profile')}>♙</button><button aria-label={t('notification.title')}>♧</button></div></header>
+    <div className="screen-scroll home-scroll">
+      <button className="search-bar" onClick={() => navigate('/qna')}>⌕ &nbsp; {t('demo.search')}</button>
+      <button className="points-banner" onClick={() => navigate('/reward')}><span>{t('demo.myPoints')}<strong>{(points?.balance ?? 1000).toLocaleString()}P</strong><small>{points?.snapshot ? t('ui.monthly') : ''}</small></span><span className="banner-link">{t('reward.transfer')} ❯</span></button>
+      <div className="category-grid">{CATEGORIES.map(([id]) => <button key={id} onClick={() => navigate(`/qna?category=${id}`)}><img className="category-symbol" src={CATEGORY_ICONS[id]} alt="" />{categoryLabel(id, i18n.language)}</button>)}</div>
+      <div className="section-heading"><h2>🔥 {t('home.liveQuestions')}</h2><button onClick={() => navigate('/qna')}>{t('ui.more')}</button></div>
+      {questions.length ? questions.slice(0, 3).map((question) => <button className="question-card" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}><span className="card-badges"><em>{categoryLabel(question.category, i18n.language)}</em><em className="points-tag">{question.rewardPoints}P</em></span><strong>{question.title}</strong><small>{DEMO_USERS.find((entry) => entry.id === question.ownerId)?.nickname ?? 'K&A'} · {t('ui.answers', { count: 0 })}</small></button>) : <div className="empty-card"><p>{t('home.noLiveQuestions')}</p><button onClick={() => navigate('/qna/new')}>{t('demo.start')}</button></div>}
     </div>
-  );
+  </div>;
 }

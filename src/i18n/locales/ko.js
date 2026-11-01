@@ -3,6 +3,8 @@
  * 피그마 디자인 확정 후 실제 텍스트로 교체 예정.
  */
 const ko = {
+  nav: { home: '홈', board: '게시판', write: '질문하기', points: '포인트', profile: '마이' },
+  demo: { tagline: '당신의 한국 생활 가이드', forgot: '비밀번호 찾기', or: '또는', search: '비자 연장, 병원, 계약서 . . .', categories: '카테고리', start: '첫 질문을 등록해 보세요', myPoints: '내 포인트', history: '포인트 내역', convert: '온누리 전환', amount: '직접 입력', notice: '디지털 온누리 서비스로 이동하여 계속해주세요.', invalidAmount: '1,000P 이상, 1,000P 단위로 잔액 이내에서 입력해주세요.' },
   common: {
     loading: '불러오는 중...',
     error: '오류가 발생했습니다.',

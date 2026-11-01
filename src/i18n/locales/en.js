@@ -3,6 +3,8 @@
  * Parallel structure with ko.js — keep in sync.
  */
 const en = {
+  nav: { home: 'Home', board: 'Board', write: 'Ask', points: 'Points', profile: 'My' },
+  demo: { tagline: 'Your guide to life in Korea', forgot: 'Forgot password', or: 'or', search: 'Visa, hospital, contract...', categories: 'Categories', start: 'Ask the first question', myPoints: 'My Points', history: 'Point History', convert: 'Onnuri conversion', amount: 'Enter amount', notice: 'Please continue in the Digital Onnuri app.', invalidAmount: 'Enter at least 1,000P in steps of 1,000P, within your balance.' },
   common: {
     loading: 'Loading...',
     error: 'An error occurred.',
