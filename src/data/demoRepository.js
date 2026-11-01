@@ -12,7 +12,9 @@ export async function ensureDemoData() {
       const snapshots = tx.objectStore('pointSnapshots');
       const createdAt = now();
       users.get(user.id).onsuccess = (event) => {
-        if (!event.target.result) users.add({ ...user, createdAt, updatedAt: createdAt, revision: 1 });
+        const existing = event.target.result;
+        if (!existing) users.add({ ...user, createdAt, updatedAt: createdAt, revision: 1 });
+        else if (existing.email !== user.email) users.put({ ...existing, email: user.email, updatedAt: createdAt, revision: (existing.revision ?? 1) + 1 });
       };
       settings.get(user.id).onsuccess = (event) => {
         if (!event.target.result) settings.add({ id: user.id, ownerId: user.id, uiLanguage: user.uiLanguage, createdAt, updatedAt: createdAt, revision: 1 });
