@@ -1,16 +1,52 @@
-# React + Vite
+# K&A 로컬 프로토타입
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+한국 거주 외국인의 생활·행정 Q&A를 시연하기 위한 React 앱입니다. 현재는 기본 홈 화면과 개발 설정이 준비돼 있으며, IndexedDB·데모 로그인·다국어 화면·로컬 Node API·LLM 기능은 후속 구현 대상입니다.
 
-Currently, two official plugins are available:
+## 개발 환경
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 24, npm 사용. `.nvmrc`에 개발용 Node 버전을 지정했습니다.
+- React 19, Vite 8, JavaScript/JSX, Tailwind CSS 3, React Router, Zustand, i18next.
+- `package-lock.json`을 기준으로 설치합니다. `npm ci`는 기존 `node_modules`를 재설치하므로 최초 설치나 잠금 파일 변경 시 사용합니다.
 
-## React Compiler
+```sh
+# nvm을 사용하는 경우
+nvm use
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# 최초 의존성 설치
+npm ci
 
-## Expanding the ESLint configuration
+# 프론트 개발 서버
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+기본 주소는 `http://localhost:5173`입니다. 해당 포트가 사용 중이면 Vite가 출력한 실제 주소를 확인하세요. 개발 서버는 localhost에만 바인딩하며 `Ctrl+C`로 종료합니다. 현재 실행에는 `.env`, Firebase 프로젝트, API 키가 필요하지 않습니다.
+
+## 확인 명령
+
+```sh
+npm run lint
+npm run build
+npm run preview
+```
+
+- `lint`: ESLint 검사.
+- `build`: `dist/`에 프론트 정적 빌드 생성.
+- `preview`: 빌드 결과를 기본 `http://localhost:4173`에서 확인. 먼저 `build`를 실행합니다.
+- 현재 별도 테스트 명령은 없습니다. 빌드 성공은 아직 없는 로그인·DB·LLM 기능의 검증을 뜻하지 않습니다.
+
+## 환경 변수
+
+- 현재 프론트 실행에는 환경 변수를 설정하지 않습니다.
+- `.env.example`은 빈 값만 담는 공유 템플릿입니다. 향후 서버 연결 시 필요할 때만 `.env`로 복사합니다. `.env`와 `.env.*`는 Git에서 제외하며 `.env.example`만 예외입니다.
+- `OPENAI_API_KEY`는 향후 로컬 Node API가 읽을 서버 전용 키입니다. 현재 서버와 키 로더는 없으며, 값을 채우는 것만으로 LLM 기능이 동작하지 않습니다.
+- 실제 키를 `VITE_*` 환경 변수, 프론트 코드, IndexedDB 또는 로그에 넣지 않습니다.
+- Firebase·Algolia 패키지와 초기화 파일은 기존 스캐폴딩에 남아 있지만 현재 화면에서는 사용하지 않습니다. 이를 위해 콘솔 계정이나 Emulator를 설정할 필요가 없습니다.
+
+## 개발 기준과 진행 상태
+
+- [AGENTS.md](AGENTS.md): 프로젝트 개발 지침 진입점.
+- [프로젝트 하네스](docs/harness/PROJECT_HARNESS.md): 활성 제품·아키텍처·검증 기준.
+- [답변 평가 룰](docs/harness/ANSWER_EVALUATION_RULES.md), [질문 보상 룰](docs/harness/QUESTION_REWARD_RULES.md): 확정 LLM 계약.
+- [구현 순서와 상태](docs/IMPLEMENTATION_PLAN.md): 단계별 범위·완료 기준·검증 기록.
+
+현재 데이터 서버·온라인 동기화·상품권 발급·배포는 연결하지 않았습니다. 데모 계정 정의는 하네스에 있지만 실제 로그인 기능은 아직 구현 전입니다.
