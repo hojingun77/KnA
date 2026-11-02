@@ -584,3 +584,21 @@ button { cursor: pointer; }
 /* ── 아이콘 포함 토스트 (Figma 04_포인트전환안내 기준) ── */
 .toast-with-icon { display: flex; align-items: center; gap: 10px; text-align: left; }
 .toast-icon { font-size: 18px; flex-shrink: 0; }
+
+/* ── 대댓글 선택된 대상 댓글 강조 (좌측 세로 컬러 바) ── */
+.qdetail-answer-card.reply-target {
+  border-color: #7b6fc4;
+  border-left: 4px solid #7b6fc4;
+  background: #f4f3fc;
+  position: relative;
+}
+.qdetail-answer-card.reply-target::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 20px 0 0 20px;
+  background: linear-gradient(180deg, #9d6dc4 0%, #5e6ca6 100%);
+}

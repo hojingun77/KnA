@@ -158,7 +158,7 @@ export default function QuestionPage() {
     const replies = answers.filter((item) => item.parentAnswerId === answer.id);
     return <div className="qdetail-answer-thread" key={answer.id} style={{ marginLeft: depth ? `${Math.min(depth, 3) * 12}px` : 0 }}>
       <article
-        className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}`}
+        className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}${replyTargetId === answer.id ? ' reply-target' : ''}`}
         onClick={() => { if (canAdopt) setSelectedAnswerId(isSelected ? null : answer.id); }}
         role={canAdopt ? 'button' : undefined}
         tabIndex={canAdopt ? 0 : undefined}
