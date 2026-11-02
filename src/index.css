@@ -195,7 +195,7 @@ button { cursor: pointer; }
 .search-results-title { margin-bottom: 12px; }
 .search-content .question-card { margin: 10px 0; }
 .search-empty { margin-top: 28px; color: #8a94a3; text-align: center; font-size: 14px; }
-.points-banner { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 98px; margin-top: 14px; padding: 13px 20px; background: linear-gradient(105deg, #8c2036, #5a6da9); border: 0; border-radius: 16px; color: white; text-align: left; }
+.points-banner { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 98px; margin-top: 14px; padding: 13px 20px; background: linear-gradient(105deg, #8c2036, #7a4a8a, #5a6da9, #8c2036); background-size: 300% 100%; border: 0; border-radius: 16px; color: white; text-align: left; animation: gradient-flow 8s ease infinite; }
 .points-banner span:first-child { font-size: 13px; }
 .points-banner strong { display: block; font-size: 30px; line-height: 1.15; }
 .points-banner small { display: block; font-size: 12px; opacity: .9; margin-top: 3px; }
@@ -221,7 +221,7 @@ button { cursor: pointer; }
 .bottom-nav button { position: absolute; border: none; background: transparent; bottom: 0; height: 82px; }
 .bottom-nav .bottom-home { left: 35px; width: 95px; }.bottom-nav .bottom-add { left: 145px; width: 103px; height: 98px; }.bottom-nav .bottom-points { left: 270px; width: 90px; }
 .choose-overlay { position: absolute; inset: 0 0 86px; background: #15132763; z-index: 9; display: flex; align-items: flex-end; justify-content: center; gap: 50px; padding-bottom: 23px; }
-.choose-overlay button { position: relative; width: 140px; height: 140px; border: 0; border-radius: 50%; color: white; font-size: 48px; font-weight: 400; box-shadow: 0 10px 20px #0002; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }.choose-overlay button span { display: block; position: relative; z-index: 1; font-size: 19px; font-weight: 700; }.choose-question { background: #d8477e; }.choose-board { background: #5668c6; }.choose-overlay .choice-icon { position: relative; z-index: 1; width: 54px; height: 54px; object-fit: contain; }.choose-overlay .choice-bg { position: absolute; inset: 0; width: 140px; height: 140px; }
+.choose-overlay button { position: relative; width: 140px; height: 140px; border: 0; border-radius: 50%; color: white; font-size: 48px; font-weight: 400; box-shadow: 0 10px 20px #0002; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }.choose-overlay button span { display: block; position: relative; z-index: 1; font-size: 19px; font-weight: 700; }.choose-question { background: linear-gradient(135deg, #d8477e, #a03060, #d8477e); background-size: 300% 300%; animation: gradient-flow-diag 9s ease infinite; }.choose-board { background: linear-gradient(135deg, #5668c6, #3a5aa8, #5668c6); background-size: 300% 300%; animation: gradient-flow-diag 9s ease infinite 0.5s; }.choose-overlay .choice-icon { position: relative; z-index: 1; width: 54px; height: 54px; object-fit: contain; }.choose-overlay .choice-bg { position: absolute; inset: 0; width: 140px; height: 140px; }
 .board-title { height: 62px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; }.board-title button { border: none; background: none; font-size: 21px; }.board-title h1 { font-size: 20px; font-weight: 700; }.board-scroll { height: 100%; padding: 0 15px 110px; }.board-screen .question-card { min-height: 122px; margin: 12px 0; padding: 13px; }.board-screen .question-card small { display: flex; justify-content: space-between; }.status-pills { display: flex; gap: 8px; padding: 10px 0 4px; }.status-pills button { padding: 7px 12px; background: #f8fafc; color: #8a94a3; border: 1px solid #dce3eb; border-radius: 20px; font-weight: 700; white-space: nowrap; }.status-pills .selected { color: white; background: #10151c; border-color: #10151c; }
 .category-pills { display: flex; gap: 6px; overflow: auto; padding: 14px 0; }
 .category-pills button, .compose-categories button { flex-shrink: 0; padding: 7px 12px; border: 1px solid #d9e0e9; border-radius: 20px; background: #f8fafc; color: #8a94a3; font-weight: 700; }
@@ -390,7 +390,7 @@ button { cursor: pointer; }
 .search-toolbar .search-back { flex: 0 0 24px; width: 24px; height: 38px; }
 
 /* 제공된 HTML 목업의 팝업, 시트, 토스트, 완료 모션 */
-.bottom-nav .bottom-add { top: 0; bottom: auto; left: 166px; width: 61px; height: 61px; border-radius: 20px; background: linear-gradient(135deg, #d8222e 10%, #5f94e1 90%); color: #fff; display: grid; place-items: center; transition: transform .2s; }
+.bottom-nav .bottom-add { top: 0; bottom: auto; left: 166px; width: 61px; height: 61px; border-radius: 20px; background: linear-gradient(135deg, #d8222e, #a03878, #5f94e1, #d8222e); background-size: 300% 300%; color: #fff; display: grid; place-items: center; transition: transform .2s; animation: gradient-flow-diag 10s ease infinite; }
 .bottom-nav .bottom-add::before { content: '+'; font-size: 46px; font-weight: 300; line-height: 1; transform: translateY(-2px); }
 .bottom-nav .bottom-add.open { transform: rotate(45deg); }
 .choose-overlay button { animation: mock-pop .22s ease-out; }
@@ -400,9 +400,21 @@ button { cursor: pointer; }
 .complete-confetti { position: absolute; top: 12px; left: 0; right: 0; height: 150px; pointer-events: none; }
 .complete-confetti i { position: absolute; top: 0; width: 10px; height: 10px; border-radius: 50%; opacity: 0; animation: mock-fall 1.9s cubic-bezier(.25,.6,.45,1) both; }
 @keyframes mock-pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+/* ── 그라데이션 일렁임 애니메이션 ── */
+@keyframes gradient-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes gradient-flow-diag {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
 @keyframes mock-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes mock-fall { 0% { transform: translateY(-40px) rotate(0); opacity: 0; } 12% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(240px) rotate(300deg); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } }
+@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } .points-banner { animation: none; } }
 
 /* Figma 06_질문&게시판_선택: speech-bubble choices */
 .choose-overlay { justify-content: flex-start; gap: 65px; padding: 0 31px 6px 27px; }
