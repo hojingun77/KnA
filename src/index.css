@@ -580,3 +580,7 @@ button { cursor: pointer; }
 .qdetail-adopted-bar { position: absolute; z-index: 5; bottom: 0; left: 0; width: 100%; padding: 14px 16px 22px; background: #f0faf5; border-top: 1px solid #b7ecd4; display: flex; align-items: center; gap: 8px; }
 .qdetail-adopted-bar-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #188754; color: white; font-size: 13px; flex-shrink: 0; }
 .qdetail-adopted-bar span:last-child { font-size: 14px; color: #188754; font-weight: 600; }
+
+/* ── 아이콘 포함 토스트 (Figma 04_포인트전환안내 기준) ── */
+.toast-with-icon { display: flex; align-items: center; gap: 10px; text-align: left; }
+.toast-icon { font-size: 18px; flex-shrink: 0; }

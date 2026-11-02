@@ -141,10 +141,9 @@ export default function QuestionPage() {
       setQuestion(updatedQ);
       setAnswers((cur) => cur.map((a) => a.id === adopted.id ? adopted : a));
       setAdoptOpen(false);
-      navigate(`/qna/${question.id}/adopt-done`, {
-        replace: true,
-        state: { answer: adopted, question: updatedQ, answererNick: selectedAnswererNick },
-      });
+      setSelectedAnswerId(null);
+      setToast(t('ui.adoptToast'));
+      setTimeout(() => setToast(''), 3000);
     } catch { setAdopting(false); }
   }
 
@@ -320,7 +319,7 @@ export default function QuestionPage() {
         </div>
       )}
 
-      {toast && <div className="toast" role="status">{toast}</div>}
+      {toast && <div className="toast toast-with-icon" role="status"><span className="toast-icon" aria-hidden="true">ⓘ</span>{toast}</div>}
     </div>
   );
 }
