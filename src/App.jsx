@@ -14,7 +14,9 @@ import ProfilePage from '@/pages/ProfilePage';
 import { deviceLanguage } from '@/i18n';
 import { ensureDemoData, getDemoUser } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
-import bottomBar from '@/assets/figma/home-bottom-bar.svg';
+import homeBottomBar from '@/assets/figma/home-bottom-bar.svg';
+import neutralBottomBar from '@/assets/figma/neutral-bottom-bar.svg';
+import rewardBottomBar from '@/assets/figma/reward-bottom-bar.svg';
 import choiceQuestion from '@/assets/figma/choice-question-bg.svg';
 import choiceQuestionIcon from '@/assets/figma/choice-question-icon.svg';
 import choiceBoardIcon from '@/assets/figma/choice-board-icon.svg';
@@ -67,6 +69,7 @@ function AppRoutes() {
   if (!user) return <DeviceFrame login><LoginPage /></DeviceFrame>;
 
   const showNavigation = location.pathname === '/qna/new' || location.pathname.endsWith('/edit') || !/^\/qna\/[^/]+(?:\/complete)?$/.test(location.pathname);
+  const bottomBar = location.pathname === '/home' ? homeBottomBar : location.pathname === '/reward' ? rewardBottomBar : neutralBottomBar;
   return <DeviceFrame>
     <div className="app-shell">
       <Routes>
@@ -82,7 +85,7 @@ function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-      {showNavigation && <><nav className="bottom-nav" aria-label="Main"><img src={bottomBar} alt="" /><button className="bottom-home" onClick={() => navigate('/home')} aria-label={t('nav.home')} /><button className={`bottom-add${choose ? ' open' : ''}`} onClick={() => setChoose(!choose)} aria-label={t('nav.write')} /><button className="bottom-points" onClick={() => navigate('/reward')} aria-label={t('nav.points')} /></nav>{choose && <div className="choose-overlay" onClick={() => setChoose(false)}><button className="choose-question" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna/new'); }}><img className="choice-bg" src={choiceQuestion} alt="" /><img className="choice-icon" src={choiceQuestionIcon} alt="" /><span>{t('nav.write')}</span></button><button className="choose-board" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna'); }}><img className="choice-icon" src={choiceBoardIcon} alt="" /><span>{t('nav.board')}</span></button></div>}</>}
+      {showNavigation && <><nav className="bottom-nav" aria-label="Main"><img src={bottomBar} alt="" /><button className="bottom-home" onClick={() => navigate('/home')} aria-label={t('nav.home')} aria-current={location.pathname === '/home' ? 'page' : undefined} /><button className={`bottom-add${choose ? ' open' : ''}`} onClick={() => setChoose(!choose)} aria-label={t('nav.write')} /><button className="bottom-points" onClick={() => navigate('/reward')} aria-label={t('nav.points')} aria-current={location.pathname === '/reward' ? 'page' : undefined} /></nav>{choose && <div className="choose-overlay" onClick={() => setChoose(false)}><button className="choose-question" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna/new'); }}><img className="choice-bg" src={choiceQuestion} alt="" /><img className="choice-icon" src={choiceQuestionIcon} alt="" /><span>{t('nav.write')}</span></button><button className="choose-board" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna'); }}><img className="choice-icon" src={choiceBoardIcon} alt="" /><span>{t('nav.board')}</span></button></div>}</>}
     </div>
   </DeviceFrame>;
 }
