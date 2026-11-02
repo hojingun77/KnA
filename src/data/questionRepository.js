@@ -28,11 +28,37 @@ export async function isBlocked(ownerId, questionId) {
   return Boolean(await readRecord('blocks', `${ownerId}:${questionId}`));
 }
 
-export async function createQuestion({ ownerId, title, body, category, urgent, authorLanguage = 'ko', files = [] }) {
+// kna-reward-v1 금액표 (QUESTION_REWARD_RULES.md 2절). 모델은 등급만 고르고 금액은 여기서 계산한다.
+export const REWARD_POLICY_VERSION = 'kna-reward-v1';
+const BASE_POINTS = { basic: 100, guided: 150, complex: 200 };
+
+// 등록 시 확정 보상 스냅샷 (5절). reward가 없거나 유효하지 않으면 기본 보상(100P/긴급 150P)이다.
+function rewardSnapshot(reward, urgent, lockedAt) {
+  const llm = reward?.source === 'llm' && reward.policyVersion === REWARD_POLICY_VERSION && Object.hasOwn(BASE_POINTS, reward.tier);
+  const basePoints = llm ? BASE_POINTS[reward.tier] : 100;
+  const rewardPoints = urgent ? basePoints * 1.5 : basePoints;
+  if (!Number.isSafeInteger(rewardPoints) || rewardPoints <= 0) throw new Error('Invalid reward');
+  return {
+    rewardPolicyVersion: REWARD_POLICY_VERSION,
+    rewardSource: llm ? 'llm' : 'default',
+    rewardTier: llm ? reward.tier : null,
+    basePoints,
+    isUrgentAtRegistration: Boolean(urgent),
+    rewardPoints,
+    rewardLockedAt: lockedAt,
+    rewardReason: llm ? String(reward.reason).slice(0, 200) : null,
+    rewardDefaultReason: llm ? null : (reward?.defaultReason ?? 'llm_disabled'),
+    rewardModel: llm ? reward.model ?? null : null,
+    rewardAssessedAt: llm ? reward.assessedAt ?? null : null,
+    rewardOutputLocale: llm ? reward.outputLocale ?? null : null,
+  };
+}
+
+export async function createQuestion({ ownerId, title, body, category, urgent, authorLanguage = 'ko', files = [], reward = null }) {
   validateAttachments(files);
   const createdAt = new Date().toISOString();
   const id = crypto.randomUUID();
-  const question = { id, ownerId, title, body, category, urgent, authorLanguage, rewardTier: 'basic', rewardPoints: urgent ? 150 : 100, rewardSource: 'default', status: 'open', revision: 1, createdAt, updatedAt: createdAt };
+  const question = { id, ownerId, title, body, category, urgent, authorLanguage, ...rewardSnapshot(reward, urgent, createdAt), status: 'open', revision: 1, createdAt, updatedAt: createdAt };
   await inTransaction(['questions', 'attachments'], 'readwrite', (tx) => {
     tx.objectStore('questions').add(question);
     for (const file of files) tx.objectStore('attachments').add({ id: crypto.randomUUID(), ownerId, questionId: id, name: file.name, type: file.type, size: file.size, blob: file, createdAt, updatedAt: createdAt, revision: 1 });

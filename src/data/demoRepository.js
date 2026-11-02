@@ -123,7 +123,7 @@ export async function getPointOverview(ownerId) {
 }
 
 export async function resetDemoData() {
-  await inTransaction(['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks'], 'readwrite', (tx) => {
+  await inTransaction(['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks', 'notifications', 'translations'], 'readwrite', (tx) => {
     for (const name of Array.from(tx.objectStoreNames)) tx.objectStore(name).clear();
   });
   await ensureDemoData();

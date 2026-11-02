@@ -12,6 +12,8 @@ import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 import commentInputBg from '@/assets/figma/comment-input-bg.svg';
 import commentSend from '@/assets/figma/comment-send.svg';
 import BackButton from '@/components/ui/BackButton';
+import TranslateToggle from '@/components/ui/TranslateToggle';
+import useAutoTranslation from '@/hooks/useAutoTranslation';
 
 export default function QuestionPage() {
   const { questionId } = useParams();
@@ -43,6 +45,18 @@ export default function QuestionPage() {
   const cancelDeleteRef = useRef(null);
   const cancelAdoptRef = useRef(null);
   const questionScrollRef = useRef(null);
+  // 중국어·베트남어 화면: 질문 제목·본문과 모든 답변을 화면 언어로 자동 번역 (한 번에 묶어 요청)
+  const titleItem = question ? { kind: 'question_title', id: question.id, revision: question.revision, text: question.title, sourceLanguage: question.authorLanguage } : null;
+  const bodyItem = question ? { kind: 'question_body', id: question.id, revision: question.revision, text: question.body, sourceLanguage: question.authorLanguage } : null;
+  const contentTranslation = useAutoTranslation(question ? [titleItem, bodyItem, ...answers.map(answerItem)] : []);
+  // 원문 보기: 번역문 자리에 원문 글자만 바꿔 보여 준다 (질문은 제목+본문 함께, 답변은 각각). 화면을 나가면 초기화.
+  const [originalShown, setOriginalShown] = useState(() => new Set());
+  const toggleOriginal = (id) => setOriginalShown((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const shownText = (id, item) => (originalShown.has(id) ? item.text : contentTranslation.text(item));
 
   const isOwner = question && question.ownerId === user.id;
   const isAdopted = question && question.status === 'adopted';
@@ -91,7 +105,7 @@ export default function QuestionPage() {
     if (sendingAnswer || !answerDraft.trim()) return;
     setSendingAnswer(true); setAnswerError('');
     try {
-      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft, parentAnswerId: replyTargetId });
+      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft, parentAnswerId: replyTargetId, authorLanguage: i18n.language });
       setAnswers((cur) => [...cur, saved]);
       const mySettings = await getDemoUserSettings(user.id);
       if (mySettings?.selectedTitle) setAnswerTitles((cur) => ({ ...cur, [user.id]: mySettings.selectedTitle }));
@@ -175,7 +189,7 @@ export default function QuestionPage() {
           <button className="answer-reply-button" aria-label={t('ui.reply')} onClick={(event) => { event.stopPropagation(); setReplyTargetId(answer.id); setAnswerError(''); }}>{t('ui.reply')}</button>
           {answer.ownerId === user.id && !isThisAdopted && <button className="answer-more-button" aria-label={t('ui.more')} onClick={(event) => { event.stopPropagation(); setAnswerMenuId(answerMenuId === answer.id ? null : answer.id); }}>⋮</button>}
         </div>
-        {isEditing ? <div className="answer-edit-box" onClick={(event) => event.stopPropagation()}><textarea value={editingAnswerDraft} onChange={(event) => setEditingAnswerDraft(event.target.value)} /><div><button onClick={() => saveAnswerEdit(answer)} disabled={!editingAnswerDraft.trim()}>{t('common.save')}</button><button onClick={() => setEditingAnswerId(null)}>{t('common.cancel')}</button></div></div> : <p className="qdetail-answer-body">{answer.body}</p>}
+        {isEditing ? <div className="answer-edit-box" onClick={(event) => event.stopPropagation()}><textarea value={editingAnswerDraft} onChange={(event) => setEditingAnswerDraft(event.target.value)} /><div><button onClick={() => saveAnswerEdit(answer)} disabled={!editingAnswerDraft.trim()}>{t('common.save')}</button><button onClick={() => setEditingAnswerId(null)}>{t('common.cancel')}</button></div></div> : <AnswerBody answer={answer} translation={contentTranslation} showOriginal={originalShown.has(answer.id)} onToggle={() => toggleOriginal(answer.id)} />}
         {answerMenuId === answer.id && <div className="answer-menu" onClick={(event) => event.stopPropagation()}><button onClick={() => startAnswerEdit(answer)}>{t('ui.edit')}</button><button onClick={() => removeAnswer(answer)}>{t('ui.delete')}</button></div>}
       </article>
       {replies.map((reply) => renderAnswer(reply, depth + 1))}
@@ -199,8 +213,9 @@ export default function QuestionPage() {
         </div>
 
         {/* 제목 / 본문 */}
-        <h2 className="qdetail-title">{question.title}</h2>
-        <p className="qdetail-body">{question.body}</p>
+        <h2 className="qdetail-title">{shownText('question', titleItem)}</h2>
+        <p className="qdetail-body">{shownText('question', bodyItem)}</p>
+        <TranslateToggle translation={contentTranslation} item={bodyItem} showOriginal={originalShown.has('question')} onToggle={() => toggleOriginal('question')} />
         {attachments.map((a) => <AttachmentImage key={a.id} attachment={a} />)}
 
         {/* 메타 행 */}
@@ -318,6 +333,18 @@ export default function QuestionPage() {
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>
   );
+}
+
+function answerItem(answer) {
+  return { kind: 'answer_body', id: answer.id, revision: answer.revision, text: answer.body, sourceLanguage: answer.authorLanguage };
+}
+
+function AnswerBody({ answer, translation, showOriginal, onToggle }) {
+  const item = answerItem(answer);
+  return <>
+    <p className="qdetail-answer-body">{showOriginal ? item.text : translation.text(item)}</p>
+    <TranslateToggle translation={translation} item={item} showOriginal={showOriginal} onToggle={onToggle} />
+  </>;
 }
 
 function AttachmentImage({ attachment }) {

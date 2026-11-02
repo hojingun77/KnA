@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
@@ -9,6 +9,7 @@ import composePhotoBg from '@/assets/figma/compose-photo-bg.svg';
 import composePhotoIcon from '@/assets/figma/compose-photo-icon.svg';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 import BackButton from '@/components/ui/BackButton';
+import { classifyReward, getCapabilities } from '@/api/llm';
 
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -27,6 +28,12 @@ export default function ComposePage() {
   const [removedAttachmentIds, setRemovedAttachmentIds] = useState([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  // 질문 보상 분류 (kna-reward-v1): null | 'analyzing' | 'failed'
+  const [rewardPhase, setRewardPhase] = useState(null);
+  const [rewardFailure, setRewardFailure] = useState(null);
+  const mounted = useRef(true);
+  // 개발 모드(StrictMode)는 마운트→정리→재마운트를 한 번 더 하므로 재마운트 때 true로 되돌린다.
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   useEffect(() => { if (questionId) Promise.all([getQuestion(questionId), listAttachments(questionId)]).then(([question, attachments]) => {
     if (!question || question.ownerId !== user.id) { navigate('/qna', { replace: true }); return; }
     setExisting(question); setCategory(question.category); setTitle(question.title); setBody(question.body); setUrgent(question.urgent); setSavedFiles(attachments);
@@ -39,15 +46,48 @@ export default function ComposePage() {
     }
     setFiles(next); setError(''); event.target.value = '';
   }
+  async function register(reward) {
+    try {
+      const question = await createQuestion({ ownerId: user.id, title: title.trim(), body: body.trim(), category, urgent, authorLanguage: i18n.language, files, reward });
+      if (mounted.current) navigate(`/qna/${question.id}/complete`, { replace: true });
+    } catch {
+      if (!mounted.current) return;
+      setRewardPhase(null); setError(t('common.error')); setBusy(false);
+    }
+  }
+  async function classifyAndRegister() {
+    setBusy(true); setError(''); setRewardPhase('analyzing'); setRewardFailure(null);
+    try {
+      const result = await classifyReward({ title: title.trim(), body: body.trim(), outputLocale: i18n.language });
+      if (!mounted.current) return; // 화면을 떠난 뒤 도착한 응답은 버린다.
+      if (result.status === 'classified') { await register({ source: 'llm', ...result }); return; }
+      setRewardFailure('insufficient_context');
+    } catch {
+      if (!mounted.current) return;
+      setRewardFailure('unavailable');
+    }
+    setRewardPhase('failed'); setBusy(false);
+  }
   async function submit(event) {
     event.preventDefault();
+    if (busy) return;
     if (!title.trim() || !body.trim()) { setError(t('ui.required')); return; }
+    if (existing) {
+      setBusy(true); setError('');
+      try {
+        const question = await updateQuestion(existing, { title: title.trim(), body: body.trim(), category, urgent }, { files, removedAttachmentIds });
+        navigate(`/qna/${question.id}`, { replace: true });
+      } catch { setError(t('common.error')); setBusy(false); }
+      return;
+    }
     setBusy(true); setError('');
-    try {
-      const question = existing ? await updateQuestion(existing, { title: title.trim(), body: body.trim(), category, urgent }, { files, removedAttachmentIds }) : await createQuestion({ ownerId: user.id, title: title.trim(), body: body.trim(), category, urgent, authorLanguage: i18n.language, files });
-      navigate(existing ? `/qna/${question.id}` : `/qna/${question.id}/complete`, { replace: true });
-    } catch { setError(t('common.error')); }
-    finally { setBusy(false); }
+    const caps = await getCapabilities();
+    if (!caps.reward) { await register({ source: 'default', defaultReason: 'llm_disabled' }); return; }
+    await classifyAndRegister();
+  }
+  function registerWithDefault() {
+    setBusy(true); setRewardPhase('analyzing');
+    register({ source: 'default', defaultReason: rewardFailure ?? 'unavailable' });
   }
   return <div className={`screen compose-screen${i18n.language === 'vi' ? ' compose-vi' : ''}`}><BrandHeader /><header className="compose-subbar"><BackButton onClick={() => navigate(-1)} /><h1>{t('question.write')}</h1></header><form className="compose-form" onSubmit={submit}>
     <label>{t('question.category')}</label><div className="compose-categories">{CATEGORIES.map(([id]) => <button key={id} type="button" className={category === id ? 'selected' : ''} onClick={() => setCategory(id)}><img src={CATEGORY_ICONS[id]} alt="" />{categoryLabel(id, i18n.language)}</button>)}</div>
@@ -59,5 +99,22 @@ export default function ComposePage() {
     <p className="reward-hint">{t(existing ? 'ui.editRewardHint' : 'ui.rewardHint')}</p>
     {error && <p className="form-error" role="alert">{error}</p>}
     <button className="primary-action" disabled={busy} type="submit">{busy ? t('common.loading') : existing ? t('common.save') : t('ui.post')}</button>
-  </form></div>;
+  </form>
+  {rewardPhase && <div className="modal-backdrop reward-backdrop">
+    <section className="delete-dialog reward-dialog" role={rewardPhase === 'failed' ? 'alertdialog' : 'status'} aria-modal="true" aria-live="polite">
+      {rewardPhase === 'analyzing' ? <>
+        <span className="reward-spinner" aria-hidden="true" />
+        <h2>{t('ui.llm.rewardAnalyzingTitle')}</h2>
+        <p>{t('ui.llm.rewardAnalyzingSteps')}</p>
+      </> : <>
+        <h2>{rewardFailure === 'insufficient_context' ? t('ui.llm.rewardInsufficient') : t('ui.llm.rewardFailed')}</h2>
+        <button className="primary-action" onClick={registerWithDefault}>{t('ui.llm.rewardUseDefault')}</button>
+        <div className="delete-actions">
+          <button className="cancel-action" onClick={() => setRewardPhase(null)}>{t('common.cancel')}</button>
+          <button className="cancel-action" onClick={classifyAndRegister}>{t('ui.llm.rewardRetry')}</button>
+        </div>
+      </>}
+    </section>
+  </div>}
+  </div>;
 }

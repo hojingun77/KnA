@@ -575,3 +575,23 @@ button { cursor: pointer; }
 .card-badges .card-lang { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px; background: #f0f0f0; color: #555; border: 1px solid #d8d8d8; }
 .card-meta-right { display: flex; align-items: center; gap: 6px; }
 .card-urgent-icon-bottom { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; filter: invert(15%) sepia(82%) saturate(3000%) hue-rotate(335deg) brightness(80%); }
+
+/* ── codex/llm-prototype: 사용자 콘텐츠 번역 ── */
+.translate-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 2px; }
+.translate-button { padding: 3px 10px; border: 1px solid #c9cce3; border-radius: 999px; background: #fff; color: #4c5394; font-size: 12px; font-weight: 600; }
+.translate-button:disabled { opacity: .6; }
+.translate-button.error { border-color: #e2a4b5; color: #a03b59; }
+.translate-meta { font-size: 11px; color: #8a8ea8; }
+/* 원문 보기 ↔ 번역문 보기 전환 버튼 */
+.translate-button { cursor: pointer; }
+
+/* ── codex/llm-prototype: 질문 보상 분류 ── */
+.reward-dialog { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.reward-dialog h2 { font-size: 16px; line-height: 1.45; }
+.reward-dialog p { font-size: 12.5px; color: #6b7090; line-height: 1.5; }
+.reward-dialog .primary-action, .reward-dialog .delete-actions { width: 100%; }
+.reward-spinner { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #e3e5f3; border-top-color: #b03a5b; animation: reward-spin .8s linear infinite; }
+@keyframes reward-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .reward-spinner { animation: none; } }
+.reward-ai-tag { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: #eef0f8; color: #4c5394; font-size: 11px; font-weight: 700; }
+.reward-default-tag { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: #f1f1f4; color: #6b7090; font-size: 11px; font-weight: 700; }
