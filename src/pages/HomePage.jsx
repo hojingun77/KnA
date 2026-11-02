@@ -33,7 +33,7 @@ export default function HomePage() {
         <div className="category-grid">
           {CATEGORIES.map(([id]) => (
             <button key={id} onClick={() => navigate(`/qna?category=${id}`)}>
-              <img className="category-symbol" src={CATEGORY_ICONS[id]} alt="" />
+              <img className={`category-symbol category-symbol-${id}`} src={CATEGORY_ICONS[id]} alt="" />
               {categoryLabel(id, i18n.language)}
             </button>
           ))}

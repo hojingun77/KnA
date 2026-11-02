@@ -23,7 +23,10 @@ import neutralBottomBar from '@/assets/figma/neutral-bottom-bar.svg';
 import rewardBottomBar from '@/assets/figma/reward-bottom-bar.svg';
 import choiceQuestion from '@/assets/figma/choice-question-bg.svg';
 import choiceQuestionIcon from '@/assets/figma/choice-question-icon.svg';
+import choiceQuestionTail from '@/assets/figma/choice-question-tail.svg';
+import choiceBoardBg from '@/assets/figma/choice-board-bg.svg';
 import choiceBoardIcon from '@/assets/figma/choice-board-icon.svg';
+import choiceBoardTail from '@/assets/figma/choice-board-tail.svg';
 
 /**
  * 라우터 구조 (유저플로우 기반 - 기획 산출물 참조)
@@ -92,7 +95,7 @@ function AppRoutes() {
         <Route path="/profile/titles" element={<TitlePage />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-      {showNavigation && <><nav className="bottom-nav" aria-label="Main"><img src={bottomBar} alt="" /><button className="bottom-home" onClick={() => navigate('/home')} aria-label={t('nav.home')} aria-current={location.pathname === '/home' ? 'page' : undefined} /><button className={`bottom-add${choose ? ' open' : ''}`} onClick={() => setChoose(!choose)} aria-label={t('nav.write')} /><button className="bottom-points" onClick={() => navigate('/reward')} aria-label={t('nav.points')} aria-current={location.pathname === '/reward' ? 'page' : undefined} /></nav>{choose && <div className="choose-overlay" onClick={() => setChoose(false)}><button className="choose-question" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna/new'); }}><img className="choice-bg" src={choiceQuestion} alt="" /><img className="choice-icon" src={choiceQuestionIcon} alt="" /><span>{t('nav.write')}</span></button><button className="choose-board" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna'); }}><img className="choice-icon" src={choiceBoardIcon} alt="" /><span>{t('nav.board')}</span></button></div>}</>}
+      {showNavigation && <><nav className="bottom-nav" aria-label="Main"><img src={bottomBar} alt="" /><button className="bottom-home" onClick={() => navigate('/home')} aria-label={t('nav.home')} aria-current={location.pathname === '/home' ? 'page' : undefined} /><button className={`bottom-add${choose ? ' open' : ''}`} onClick={() => setChoose(!choose)} aria-label={t('nav.write')} /><button className="bottom-points" onClick={() => navigate('/reward')} aria-label={t('nav.points')} aria-current={location.pathname === '/reward' ? 'page' : undefined} /></nav>{choose && <div className="choose-overlay" onClick={() => setChoose(false)}><button className="choose-question" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna/new'); }}><img className="choice-bg" src={choiceQuestion} alt="" /><img className="choice-tail choose-question-tail" src={choiceQuestionTail} alt="" /><img className="choice-icon" src={choiceQuestionIcon} alt="" /><span>{t('nav.write')}</span></button><button className="choose-board" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna'); }}><img className="choice-bg" src={choiceBoardBg} alt="" /><img className="choice-tail choose-board-tail" src={choiceBoardTail} alt="" /><img className="choice-icon" src={choiceBoardIcon} alt="" /><span>{t('nav.board')}</span></button></div>}</>}
     </div>
   </DeviceFrame>;
 }

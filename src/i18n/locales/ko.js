@@ -91,7 +91,7 @@ const ko = {
     personalSection: '내 정보', changeNickname: '닉네임 변경', changePassword: '비밀번호 변경', changeTitle: '내 칭호 변경',
     rewardsSection: '리워드 관리', digitalOnnuriLink: '디지털온누리 연동',
     appSettings: '앱 설정', notificationSettings: '알림 설정', privacyPolicy: '개인정보 처리방침',
-    resetAll: '전체초기화', resetAgain: '한 번 더 누르면 모든 시연 데이터가 초기화돼요', resetting: '초기화 중...', resetError: '초기화하지 못했습니다. 다시 시도해주세요.',
+    resetAll: '전체초기화', resetAgain: '한 번 더 누르면 모든 시연 데이터가 초기화돼요', resetting: '초기화 중...', resetError: '초기화하지 못했습니다. 다시 시도해주세요.', nicknameHelp: '답변과 질문에 표시되는 이름이에요. 2~12자로 정해 주세요.', newNickname: '새 닉네임', passwordHelp: '영문과 숫자를 섞어 8자 이상으로 만들어 주세요.', currentPassword: '현재 비밀번호', newPassword: '새 비밀번호', confirmPassword: '새 비밀번호 확인', changeButton: '변경하기', nicknameInvalid: '닉네임은 2~12자의 문자, 숫자, 일부 기호만 사용할 수 있어요.', currentPasswordInvalid: '현재 비밀번호가 올바르지 않아요.', passwordMismatch: '새 비밀번호가 일치하지 않아요.', passwordInvalid: '영문과 숫자를 모두 포함한 8자 이상의 비밀번호를 입력해주세요.', passwordUnchanged: '현재 비밀번호와 다른 비밀번호를 입력해주세요.', changeError: '변경하지 못했습니다. 다시 시도해주세요.',
     myQuestions: '내 질문',
     myAnswers: '내 답변',
     points: '포인트 잔액',

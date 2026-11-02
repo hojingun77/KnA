@@ -92,7 +92,8 @@ button { cursor: pointer; }
 .banner-link { font-size: 14px; padding: 7px 12px; border-radius: 30px; background: #ffffff35; }
 .category-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px 16px; padding: 24px 16px 14px; }
 .category-grid button { height: 74px; border: 0; border-radius: 20px; background: #f5f5f5; font-size: 13px; font-weight: 700; }
-.category-symbol { display: block; width: 25px; height: 30px; object-fit: contain; margin: 0 auto 3px; }
+.category-symbol { display: block; width: 28px; height: 22px; object-fit: contain; margin: 0 auto 6px; filter: drop-shadow(0 0 .2px #111); }
+.category-symbol-finance, .category-symbol-work, .category-symbol-telecom { opacity: .78; }
 .section-heading { margin: 11px 10px 8px; display: flex; align-items: center; justify-content: space-between; }
 .section-heading h2 { font-size: 17px; font-weight: 700; }
 .section-heading button { color: #aaa; border: 0; background: none; font-weight: 700; }
@@ -178,6 +179,21 @@ button { cursor: pointer; }
 .compose-vi .compose-categories img { flex: 0 0 14px; width: 14px; height: 14px; }
 .compose-vi .compose-urgent-btn { width: auto; min-width: 77px; padding: 0 10px; white-space: nowrap; }
 .compose-vi .compose-urgent-btn span { font-size: 13px; }
+.notification-list { height: calc(100% - 144px); overflow-y: auto; padding: 8px 18px 110px; }
+.notification-row { position: relative; display: flex; align-items: flex-start; gap: 12px; width: 100%; min-height: 72px; padding: 18px 2px; border: 0; border-bottom: 1px solid #e6eaf0; background: #fff; text-align: left; }
+.notification-row.unread { background: #fff; }
+.notification-icon { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; color: #a7b2ba; font-size: 19px; font-weight: 700; }
+.notification-icon.adopted { background: #e2f8ef; color: #83b9aa; }
+.notification-icon.answer { background: #f3f3f8; color: #aeb1c0; }
+.notification-icon.reply { background: #fdebed; color: #d29aa3; }
+.notification-copy { min-width: 0; display: block; padding-right: 12px; }
+.notification-copy strong, .notification-copy small { display: block; overflow-wrap: anywhere; }
+.notification-copy strong { color: #252625; font-size: 15px; line-height: 1.3; }
+.notification-copy small { margin-top: 5px; color: #a3a3a3; font-size: 13px; line-height: 1.35; }
+.notification-unread, .notification-dot { border-radius: 50%; background: #dc5366; }
+.notification-unread { position: absolute; top: 21px; right: 2px; width: 7px; height: 7px; }
+.notification-button { position: relative; }
+.notification-dot { position: absolute; top: 2px; right: 1px; width: 7px; height: 7px; border: 1px solid #8a78ae; }
 .notification-empty { margin: 32px 20px; text-align: center; color: #8a94a3; }
 .profile-content { height: calc(100% - 82px); overflow-y: auto; padding: 20px 20px 125px; }
 .profile-card { display: flex; align-items: center; gap: 14px; height: 77px; padding-bottom: 20px; border-bottom: 1px solid #e5e9f0; }
@@ -189,6 +205,7 @@ button { cursor: pointer; }
 .profile-card div span { margin-top: 4px; color: #6b7280; font-size: 13px; }
 .profile-section h2 { margin: 22px 0 6px; color: #6b7280; font-size: 13px; font-weight: 400; }
 .profile-static-row { height: 55px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e5e9f0; color: #1a1d23; font-size: 15px; }
+.profile-static-row small { margin-left: auto; margin-right: 10px; color: #777583; font-size: 13px; }
 .profile-static-row img { width: 7px; height: 13px; margin-right: 4px; }
 .profile-logout, .profile-reset { display: block; min-height: 26px; padding: 0; border: 0; background: none; color: #ef4444; text-align: left; font-size: 15px; }
 .profile-logout { margin-top: 14px; }
@@ -196,6 +213,18 @@ button { cursor: pointer; }
 .profile-reset:disabled { opacity: .6; }
 .profile-link-row { width: 100%; padding: 0; border: 0; background: none; text-align: left; }
 .profile-link-row:focus-visible { outline: 2px solid #5f70ac; outline-offset: 2px; }
+.profile-sheet-backdrop { z-index: 18; }
+.profile-edit-sheet { width: 100%; max-height: 78%; overflow-y: auto; padding: 10px 20px 22px; border-radius: 24px 24px 0 0; background: #fff; animation: mock-up .22s ease-out; }
+.profile-edit-sheet h2 { margin-top: 2px; color: #171721; font-size: 21px; line-height: 1.35; }
+.profile-edit-sheet>p { margin-top: 8px; color: #858391; font-size: 13px; line-height: 1.5; }
+.profile-edit-sheet form { margin-top: 27px; }
+.profile-edit-sheet label { display: block; margin: 0 0 7px; color: #858391; font-size: 13px; }
+.profile-edit-sheet input { display: block; width: 100%; height: 48px; margin-bottom: 16px; padding: 0 14px; border: 1px solid #b9b0e8; border-radius: 15px; outline: none; background: #fff; color: #292832; font-size: 15px; }
+.profile-edit-sheet input:focus { border-color: #7267c3; box-shadow: 0 0 0 2px #7267c31c; }
+.profile-edit-sheet .form-error { margin: -4px 0 12px; color: #b21e3e; }
+.profile-edit-sheet .primary-action, .profile-edit-sheet .cancel-action { width: 100%; height: 56px; }
+.profile-edit-sheet .primary-action { margin-top: 2px; }
+.profile-edit-sheet .cancel-action { margin-top: 12px; }
 
 /* Figma 공통 흐름 로딩 및 칭호 설정 */
 .loading-screen { position: relative; width: 100%; height: 100%; background: url('./assets/figma/login-gradient.svg') center / 100% 100% no-repeat; }
@@ -241,6 +270,14 @@ button { cursor: pointer; }
 .title-card.selected .title-card-bottom b { background: #a44870; color: #fff; }
 .title-check { position: absolute; top: -6px; right: -3px; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #a44870; color: #fff; font-size: 16px; }
 
+/* Figma 05_2 reward back-navigation treatment */
+.back-button { display: grid; place-items: center; flex: 0 0 24px; width: 24px; height: 38px; padding: 0; border: 0; background: transparent; }
+.back-button img { display: block; width: 10px; height: 19px; object-fit: fill; }
+.titles-toolbar { height: 54px; padding: 0 20px; display: flex; align-items: center; }
+.titles-scroll { height: calc(100% - 136px); padding-top: 16px; }
+.board-title .back-button, .compose-subbar .back-button, .points-toolbar .back-button, .plain-header .back-button { color: inherit; }
+.search-toolbar .search-back { flex: 0 0 24px; width: 24px; height: 38px; }
+
 /* 제공된 HTML 목업의 팝업, 시트, 토스트, 완료 모션 */
 .bottom-nav .bottom-add { top: 0; bottom: auto; left: 166px; width: 61px; height: 61px; border-radius: 20px; background: linear-gradient(135deg, #d8222e 10%, #5f94e1 90%); color: #fff; display: grid; place-items: center; transition: transform .2s; }
 .bottom-nav .bottom-add::before { content: '+'; font-size: 46px; font-weight: 300; line-height: 1; transform: translateY(-2px); }
@@ -255,6 +292,18 @@ button { cursor: pointer; }
 @keyframes mock-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes mock-fall { 0% { transform: translateY(-40px) rotate(0); opacity: 0; } 12% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(240px) rotate(300deg); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } }
+
+/* Figma 06_질문&게시판_선택: speech-bubble choices */
+.choose-overlay { justify-content: flex-start; gap: 65px; padding: 0 31px 6px 27px; }
+.choose-overlay button { width: 135px; height: 150px; border-radius: 0; background: transparent; box-shadow: none; overflow: visible; }
+.choose-overlay .choice-bg { z-index: 1; inset: 0 auto auto 0; width: 135px; height: 133px; }
+.choose-overlay .choice-tail { z-index: 1; position: absolute; object-fit: fill; }
+.choose-question-tail { top: 95px; left: 81px; width: 53px; height: 56px; }
+.choose-board-tail { top: 100px; left: -6px; width: 45px; height: 40px; }
+.choose-overlay .choice-icon { z-index: 2; position: absolute; object-fit: contain; }
+.choose-question .choice-icon { top: 37px; left: 50%; width: 46px; height: 46px; transform: translateX(-50%); }
+.choose-board .choice-icon { top: 29px; left: 50%; width: 63px; height: 63px; transform: translateX(-50%); }
+.choose-overlay button span { z-index: 2; position: absolute; top: 96px; left: 0; display: flex; align-items: flex-start; justify-content: center; width: 135px; height: 42px; padding: 0 8px; overflow-wrap: anywhere; color: #fff; font-size: 16px; line-height: 19px; text-align: center; white-space: normal; }
 
 /* ── 질문 작성: 사진·긴급 버튼 (Figma 원본 SVG) ── */
 .compose-photo-btn,
@@ -273,12 +322,13 @@ button { cursor: pointer; }
   overflow: hidden;
   white-space: nowrap;
 }
-/* 사진: SVG 배경 + 아이콘을 절대 배치로 겹침 */
+/* 사진 타원은 유지하고 Figma 원본 외곽선만 가볍게 보정 */
 .compose-photo-btn .compose-photo-bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  opacity: .58;
   pointer-events: none;
 }
 .compose-photo-btn .compose-photo-icon {
@@ -287,6 +337,7 @@ button { cursor: pointer; }
   width: 17px;
   height: 15px;
   flex-shrink: 0;
+  opacity: .55;
 }
 .compose-photo-btn span {
   position: relative;
@@ -297,29 +348,41 @@ button { cursor: pointer; }
 }
 /* 긴급: 동일한 SVG 형태 버튼 */
 .compose-urgent-btn {
-  border: 1.5px solid #e7ebf0;
-  border-radius: 24px;
-  background: #f8fafc;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
-.compose-urgent-btn img {
+.compose-urgent-bg {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .58;
+  pointer-events: none;
+}
+.compose-urgent-btn .compose-urgent-icon {
+  position: relative;
+  z-index: 1;
   width: 17px;
   height: 15px;
   flex-shrink: 0;
 }
 .compose-urgent-btn span {
+  position: relative;
+  z-index: 1;
   font-size: 14px;
   font-weight: 700;
   color: #8a94a3;
 }
 /* 긴급 선택 상태: 빨간 테두리+배경, 아이콘 빨간색 */
 .compose-urgent-btn.selected {
-  border-color: #b21e3e;
   background: #fff0f2;
 }
 .compose-urgent-btn.selected span {
   color: #b21e3e;
 }
-.compose-urgent-btn.selected img {
+.compose-urgent-btn.selected .compose-urgent-icon {
   filter: invert(15%) sepia(82%) saturate(3000%) hue-rotate(335deg) brightness(80%);
 }
 
@@ -445,6 +508,18 @@ button { cursor: pointer; }
 .qdetail-answer-card.adopted { border-color: #188754; background: #f0faf5; }
 .qdetail-answer-card[role=button] { cursor: pointer; }
 .qdetail-answer-card[role=button]:focus-visible { outline: 2px solid #5a6da9; outline-offset: 2px; }
+.qdetail-answer-thread { position: relative; }
+.qdetail-answer-header { position: relative; }
+.answer-reply-button, .answer-more-button { border: 0; background: transparent; color: #9aa3b0; font-size: 12px; }
+.answer-reply-button { margin-left: auto; padding: 4px 5px; }
+.answer-more-button { padding: 1px 3px; font-size: 18px; line-height: 1; }
+.answer-menu { position: absolute; z-index: 4; top: 43px; right: 10px; min-width: 108px; overflow: hidden; border-radius: 12px; background: #f7f7f7; box-shadow: 0 12px 30px #1c1c1c24; }
+.answer-menu button { display: block; width: 100%; padding: 11px 16px; border: 0; border-bottom: 1px solid #d5d5d5; background: transparent; text-align: left; font-size: 14px; }
+.answer-menu button:last-child { border-bottom: 0; }
+.answer-edit-box textarea { display: block; width: 100%; min-height: 74px; padding: 9px; border: 1px solid #d1d8e2; border-radius: 9px; resize: vertical; font: inherit; }
+.answer-edit-box div { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.answer-edit-box button, .reply-cancel-button { padding: 6px 10px; border: 1px solid #d1d8e2; border-radius: 8px; background: #fff; font-size: 12px; }
+.reply-cancel-button { position: absolute; right: 22px; bottom: 88px; z-index: 6; }
 .qdetail-answer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .qdetail-answer-avatar { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #d8222e 10%, #5f94e1 90%); flex-shrink: 0; }
 .qdetail-answer-nick { font-size: 15px; font-weight: 700; color: #10151c; }
@@ -497,6 +572,6 @@ button { cursor: pointer; }
 .qdetail-answer-avatar-title img { width: 16px; height: 16px; object-fit: contain; }
 
 /* ── 목록 카드: 언어 태그 + 긴급 SVG 아이콘 ── */
-.card-lang { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px; background: #f0f0f0; color: #555; border: 1px solid #d8d8d8; }
+.card-badges .card-lang { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px; background: #f0f0f0; color: #555; border: 1px solid #d8d8d8; }
 .card-meta-right { display: flex; align-items: center; gap: 6px; }
 .card-urgent-icon-bottom { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; filter: invert(15%) sepia(82%) saturate(3000%) hue-rotate(335deg) brightness(80%); }

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import BrandHeader from '@/components/layout/BrandHeader';
 import adoptedIcon from '@/assets/figma/reward-history-adopted.svg';
 import convertedIcon from '@/assets/figma/reward-history-converted.svg';
+import BackButton from '@/components/ui/BackButton';
 
 function formatDate(isoString, language) {
   if (!isoString) return '';
@@ -43,7 +44,6 @@ export default function PointsPage() {
       }
     }
     // 실제 원장에서 채택 보상 항목 (opening 제외, snapshot ID와 중복 제거)
-    const snapshotIds = new Set(['visa', 'telecom', 'voucher', 'medical']);
     for (const entry of overview.ledger) {
       if (entry.kind === 'adoption') {
         rows.push({ key: entry.id, icon: adoptedIcon, label: t('answer.adopted'), date: formatDate(entry.createdAt, i18n.language), amount: entry.amount });
@@ -57,7 +57,7 @@ export default function PointsPage() {
   return (
     <div className="screen points-screen">
       <BrandHeader />
-      <div className="points-toolbar"><button onClick={() => navigate('/home')} aria-label={t('common.back')}>❮</button></div>
+      <div className="points-toolbar"><BackButton onClick={() => navigate('/home')} /></div>
       <div className="screen-scroll points-scroll">
         <button className="points-banner" onClick={() => setConvert(true)}>
           <span>{t('demo.myPoints')}<strong>{overview ? overview.balance.toLocaleString() : '…'}P</strong><small>{overview?.snapshot ? t('ui.monthly') : ''}</small></span>

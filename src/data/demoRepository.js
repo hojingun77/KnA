@@ -1,5 +1,5 @@
 import { DEMO_CREDENTIALS, DEMO_USERS } from './demoAccounts.js';
-import { inTransaction, readAll, readRecord } from './database.js';
+import { inTransaction, readAll, readRecord, writeRecord } from './database.js';
 
 const now = () => new Date().toISOString();
 const LEGACY_TEST_QUESTION_ID = '84da28f1-738a-4c45-a8cc-db75b96b634f';
@@ -56,13 +56,61 @@ export async function ensureDemoData() {
 export async function authenticateDemo(email, password) {
   const credential = DEMO_CREDENTIALS.find((entry) => entry.email === email);
   if (!credential) return null;
-  if (credential.passwordHash) {
-    const bytes = new TextEncoder().encode(`${credential.salt}:${password}`);
+  const user = await readRecord('users', credential.id);
+  const passwordSalt = user?.passwordSalt ?? credential.salt;
+  const passwordHash = user?.passwordHash ?? credential.passwordHash;
+  if (passwordHash) {
+    const bytes = new TextEncoder().encode(`${passwordSalt}:${password}`);
     const digest = await crypto.subtle.digest('SHA-256', bytes);
     const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
-    if (hash !== credential.passwordHash) return null;
+    if (hash !== passwordHash) return null;
   } else if (credential.password !== password) return null;
-  return readRecord('users', credential.id);
+  return user;
+}
+
+async function passwordMatches(userId, password) {
+  const credential = DEMO_CREDENTIALS.find((entry) => entry.id === userId);
+  const user = await readRecord('users', userId);
+  if (!credential || !user) return false;
+  const salt = user.passwordSalt ?? credential.salt;
+  const expectedHash = user.passwordHash ?? credential.passwordHash;
+  if (!expectedHash) return credential.password === password;
+  const bytes = new TextEncoder().encode(`${salt}:${password}`);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return hash === expectedHash;
+}
+
+function createPasswordSalt() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPassword(salt, password) {
+  const bytes = new TextEncoder().encode(`${salt}:${password}`);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+export async function updateDemoNickname(userId, nickname) {
+  const value = nickname.trim();
+  if (!/^[\p{L}\p{N}._-]{2,12}$/u.test(value)) throw new Error('Invalid nickname');
+  const user = await readRecord('users', userId);
+  if (!user) throw new Error('User is unavailable');
+  const updated = { ...user, nickname: value, updatedAt: now(), revision: (user.revision ?? 1) + 1 };
+  return writeRecord('users', updated);
+}
+
+export async function updateDemoPassword(userId, currentPassword, newPassword) {
+  if (!/^(?=.*[A-Za-z])(?=.*\d)\S{8,}$/.test(newPassword)) throw new Error('Password does not meet requirements');
+  if (!await passwordMatches(userId, currentPassword)) throw new Error('Current password is incorrect');
+  if (currentPassword === newPassword) throw new Error('Password is unchanged');
+  const user = await readRecord('users', userId);
+  const salt = createPasswordSalt();
+  const passwordHash = await hashPassword(salt, newPassword);
+  const updated = { ...user, passwordSalt: salt, passwordHash, updatedAt: now(), revision: (user.revision ?? 1) + 1 };
+  return writeRecord('users', updated);
 }
 
 export function getDemoUser(id) { return readRecord('users', id); }

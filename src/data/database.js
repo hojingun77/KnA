@@ -1,6 +1,6 @@
 const DATABASE_NAME = 'kna-local-prototype';
-const VERSION = 1;
-const STORES = ['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks'];
+const VERSION = 2;
+const STORES = ['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks', 'notifications'];
 
 let databasePromise;
 

@@ -91,7 +91,7 @@ const en = {
     personalSection: 'My info', changeNickname: 'Change nickname', changePassword: 'Change password', changeTitle: 'Change my title',
     rewardsSection: 'Rewards', digitalOnnuriLink: 'Digital Onnuri link',
     appSettings: 'App settings', notificationSettings: 'Notification settings', privacyPolicy: 'Privacy policy',
-    resetAll: 'Reset all', resetAgain: 'Tap again to erase all demo data', resetting: 'Resetting...', resetError: 'Could not reset. Please try again.',
+    resetAll: 'Reset all', resetAgain: 'Tap again to erase all demo data', resetting: 'Resetting...', resetError: 'Could not reset. Please try again.', nicknameHelp: 'This name appears on your questions and answers. Use 2–12 characters.', newNickname: 'New nickname', passwordHelp: 'Use at least 8 letters and numbers.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Confirm new password', changeButton: 'Change', nicknameInvalid: 'Use 2–12 letters, numbers, or supported symbols.', currentPasswordInvalid: 'The current password is incorrect.', passwordMismatch: 'The new passwords do not match.', passwordInvalid: 'Use at least 8 characters with both letters and numbers.', passwordUnchanged: 'Choose a password different from your current password.', changeError: 'Could not save the change. Please try again.',
     myQuestions: 'My Questions',
     myAnswers: 'My Answers',
     points: 'Point Balance',

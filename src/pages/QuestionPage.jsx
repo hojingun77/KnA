@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { categoryLabel } from '@/constants/categories';
 import { TITLE_COLORS, TITLE_ICONS } from '@/constants/titles';
 import { blockQuestion, deleteQuestion, getQuestion, isBlocked, listAttachments } from '@/data/questionRepository';
-import { adoptAnswer, createAnswer, listAnswers } from '@/data/answerRepository';
+import { adoptAnswer, createAnswer, deleteAnswer, listAnswers, updateAnswer } from '@/data/answerRepository';
 import { getDemoUserSettings } from '@/data/demoRepository';
 import { DEMO_USERS } from '@/data/demoAccounts';
 import useAuthStore from '@/store/authStore';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 import commentInputBg from '@/assets/figma/comment-input-bg.svg';
 import commentSend from '@/assets/figma/comment-send.svg';
+import BackButton from '@/components/ui/BackButton';
 
 export default function QuestionPage() {
   const { questionId } = useParams();
@@ -35,6 +36,10 @@ export default function QuestionPage() {
   const [adoptOpen, setAdoptOpen] = useState(false);
   const [adopting, setAdopting] = useState(false);
   const [answerTitles, setAnswerTitles] = useState({}); // answerId -> selectedTitle
+  const [answerMenuId, setAnswerMenuId] = useState(null);
+  const [editingAnswerId, setEditingAnswerId] = useState(null);
+  const [editingAnswerDraft, setEditingAnswerDraft] = useState('');
+  const [replyTargetId, setReplyTargetId] = useState(null);
   const cancelDeleteRef = useRef(null);
   const cancelAdoptRef = useRef(null);
   const questionScrollRef = useRef(null);
@@ -86,14 +91,39 @@ export default function QuestionPage() {
     if (sendingAnswer || !answerDraft.trim()) return;
     setSendingAnswer(true); setAnswerError('');
     try {
-      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft });
+      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft, parentAnswerId: replyTargetId });
       setAnswers((cur) => [...cur, saved]);
       const mySettings = await getDemoUserSettings(user.id);
       if (mySettings?.selectedTitle) setAnswerTitles((cur) => ({ ...cur, [user.id]: mySettings.selectedTitle }));
       setAnswerDraft('');
+      setReplyTargetId(null);
       requestAnimationFrame(() => { if (questionScrollRef.current) questionScrollRef.current.scrollTop = questionScrollRef.current.scrollHeight; });
     } catch { setAnswerError(t('ui.answerError')); }
     finally { setSendingAnswer(false); }
+  }
+
+  function startAnswerEdit(answer) {
+    setAnswerMenuId(null);
+    setEditingAnswerId(answer.id);
+    setEditingAnswerDraft(answer.body);
+  }
+
+  async function saveAnswerEdit(answer) {
+    try {
+      const updated = await updateAnswer({ answerId: answer.id, ownerId: user.id, body: editingAnswerDraft });
+      setAnswers((current) => current.map((item) => item.id === updated.id ? updated : item));
+      setEditingAnswerId(null);
+      setEditingAnswerDraft('');
+    } catch { setAnswerError(t('ui.answerError')); }
+  }
+
+  async function removeAnswer(answer) {
+    setAnswerMenuId(null);
+    if (!window.confirm(t('ui.deleteAnswerConfirm'))) return;
+    try {
+      const deleted = await deleteAnswer({ answerId: answer.id, ownerId: user.id });
+      setAnswers((current) => current.filter((item) => item.id !== deleted.id));
+    } catch { setAnswerError(t('ui.answerError')); }
   }
 
   async function removeOwnQuestion() {
@@ -121,12 +151,41 @@ export default function QuestionPage() {
   if (question === undefined) return <div className="screen center-message">{t('common.loading')}</div>;
   if (question === null) return <div className="screen center-message"><button onClick={() => navigate('/qna')}>{t('qna.noResults')}</button></div>;
 
-  const adoptedAnswer = isAdopted ? answers.find((a) => a.id === question.adoptedAnswerId) : null;
+  function renderAnswer(answer, depth = 0) {
+    const nick = DEMO_USERS.find((item) => item.id === answer.ownerId)?.nickname ?? user.nickname;
+    const isSelected = selectedAnswerId === answer.id;
+    const isThisAdopted = answer.adopted;
+    const isEditing = editingAnswerId === answer.id;
+    const replies = answers.filter((item) => item.parentAnswerId === answer.id);
+    return <div className="qdetail-answer-thread" key={answer.id} style={{ marginLeft: depth ? `${Math.min(depth, 3) * 12}px` : 0 }}>
+      <article
+        className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}`}
+        onClick={() => { if (canAdopt) setSelectedAnswerId(isSelected ? null : answer.id); }}
+        role={canAdopt ? 'button' : undefined}
+        tabIndex={canAdopt ? 0 : undefined}
+        onKeyDown={(e) => { if (canAdopt && (e.key === 'Enter' || e.key === ' ')) setSelectedAnswerId(isSelected ? null : answer.id); }}
+      >
+        <div className="qdetail-answer-header">
+          {answerTitles[answer.ownerId]
+            ? <span className="qdetail-answer-avatar-title" aria-hidden="true" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg }}><img src={TITLE_ICONS[answerTitles[answer.ownerId]]} alt="" /></span>
+            : <span className="qdetail-answer-avatar" aria-hidden="true" />}
+          <strong className="qdetail-answer-nick">{nick}</strong>
+          {answerTitles[answer.ownerId] && <span className="qdetail-title-badge" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg, color: TITLE_COLORS[answerTitles[answer.ownerId]]?.text }}>{t('titles.names.' + answerTitles[answer.ownerId])}</span>}
+          {isThisAdopted && <span className="qdetail-adopted-tag">{t('answer.adopted')}</span>}
+          <button className="answer-reply-button" aria-label={t('ui.reply')} onClick={(event) => { event.stopPropagation(); setReplyTargetId(answer.id); setAnswerError(''); }}>{t('ui.reply')}</button>
+          {answer.ownerId === user.id && !isThisAdopted && <button className="answer-more-button" aria-label={t('ui.more')} onClick={(event) => { event.stopPropagation(); setAnswerMenuId(answerMenuId === answer.id ? null : answer.id); }}>⋮</button>}
+        </div>
+        {isEditing ? <div className="answer-edit-box" onClick={(event) => event.stopPropagation()}><textarea value={editingAnswerDraft} onChange={(event) => setEditingAnswerDraft(event.target.value)} /><div><button onClick={() => saveAnswerEdit(answer)} disabled={!editingAnswerDraft.trim()}>{t('common.save')}</button><button onClick={() => setEditingAnswerId(null)}>{t('common.cancel')}</button></div></div> : <p className="qdetail-answer-body">{answer.body}</p>}
+        {answerMenuId === answer.id && <div className="answer-menu" onClick={(event) => event.stopPropagation()}><button onClick={() => startAnswerEdit(answer)}>{t('ui.edit')}</button><button onClick={() => removeAnswer(answer)}>{t('ui.delete')}</button></div>}
+      </article>
+      {replies.map((reply) => renderAnswer(reply, depth + 1))}
+    </div>;
+  }
 
   return (
     <div className="screen question-screen">
       <header className="plain-header">
-        <button onClick={() => navigate(-1)} aria-label={t('common.back')}>❮</button>
+        <BackButton onClick={() => navigate(-1)} />
         <button className="more-button" onClick={() => setMenu(!menu)}>⋮</button>
       </header>
 
@@ -159,40 +218,12 @@ export default function QuestionPage() {
 
         {/* 답변 목록 */}
         <section className="qdetail-answers">
-          {answers.length ? answers.map((answer) => {
-            const nick = DEMO_USERS.find((u) => u.id === answer.ownerId)?.nickname ?? user.nickname;
-            const isSelected = selectedAnswerId === answer.id;
-            const isThisAdopted = answer.adopted;
-            return (
-              <article
-                key={answer.id}
-                className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}`}
-                onClick={() => { if (canAdopt) setSelectedAnswerId(isSelected ? null : answer.id); }}
-                role={canAdopt ? 'button' : undefined}
-                tabIndex={canAdopt ? 0 : undefined}
-                onKeyDown={(e) => { if (canAdopt && (e.key === 'Enter' || e.key === ' ')) setSelectedAnswerId(isSelected ? null : answer.id); }}
-              >
-                <div className="qdetail-answer-header">
-                  {answerTitles[answer.ownerId]
-                    ? <span className="qdetail-answer-avatar-title" aria-hidden="true" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg }}><img src={TITLE_ICONS[answerTitles[answer.ownerId]]} alt="" /></span>
-                    : <span className="qdetail-answer-avatar" aria-hidden="true" />}
-                  <strong className="qdetail-answer-nick">{nick}</strong>
-                  {answerTitles[answer.ownerId] && (
-                    <span className="qdetail-title-badge" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg, color: TITLE_COLORS[answerTitles[answer.ownerId]]?.text }}>
-                      {t('titles.names.' + answerTitles[answer.ownerId])}
-                    </span>
-                  )}
-                  {isThisAdopted && <span className="qdetail-adopted-tag">{t('answer.adopted')}</span>}
-                </div>
-                <p className="qdetail-answer-body">{answer.body}</p>
-              </article>
-            );
-          }) : <p className="qdetail-empty">{t('ui.emptyAnswers')}</p>}
+          {answers.length ? answers.filter((answer) => !answer.parentAnswerId).map((answer) => renderAnswer(answer)) : <p className="qdetail-empty">{t('ui.emptyAnswers')}</p>}
         </section>
       </div>
 
       {/* 하단 — 질문자: 답변 채택하기 버튼 / 답변자: 답변 입력창 */}
-      {isOwner && !isAdopted ? (
+      {isOwner && !isAdopted && !replyTargetId ? (
         <div className="qdetail-adopt-bar">
           <button
             className="qdetail-adopt-btn"
@@ -202,13 +233,13 @@ export default function QuestionPage() {
             {t('ui.adoptBtn')}
           </button>
         </div>
-      ) : !isOwner ? (
+      ) : !isOwner || replyTargetId ? (
         <form className="answer-composer" onSubmit={submitAnswer}>
           <div className="answer-input-wrap">
             <img className="answer-input-bg" src={commentInputBg} alt="" />
             <textarea
               aria-label={t('ui.answerPlaceholder')}
-              placeholder={t('ui.answerPlaceholder')}
+              placeholder={replyTargetId ? t('ui.replyPlaceholder') : t('ui.answerPlaceholder')}
               rows={1}
               value={answerDraft}
               onChange={(e) => setAnswerDraft(e.target.value)}
@@ -217,6 +248,7 @@ export default function QuestionPage() {
               <img src={commentSend} alt="" />
             </button>
           </div>
+          {replyTargetId && <button type="button" className="reply-cancel-button" onClick={() => setReplyTargetId(null)}>{t('common.cancel')}</button>}
           {answerError && <p className="answer-input-error" role="alert">{answerError}</p>}
         </form>
       ) : null}

@@ -7,6 +7,7 @@ import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
 import BrandHeader from '@/components/layout/BrandHeader';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
+import BackButton from '@/components/ui/BackButton';
 
 export default function BoardPage() {
   const { t, i18n } = useTranslation();
@@ -26,7 +27,7 @@ export default function BoardPage() {
     <div className="screen board-screen">
       <BrandHeader />
       <div className="board-title">
-        <button onClick={() => navigate('/home')} aria-label={t('common.back')}>❮</button>
+        <BackButton onClick={() => navigate('/home')} />
         <h1>{t('qna.board')}</h1>
       </div>
       <div className="screen-scroll board-scroll">
