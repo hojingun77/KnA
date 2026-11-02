@@ -6,7 +6,6 @@ import { listQuestions } from '@/data/questionRepository';
 import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
-import BrandHeader from '@/components/layout/BrandHeader';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 
 export default function HomePage() {
@@ -22,7 +21,6 @@ export default function HomePage() {
   }, [user.id]);
   return (
     <div className="screen home-screen">
-      <BrandHeader />
       <div className="screen-scroll home-scroll">
         <button className="search-bar" onClick={() => navigate('/search')}>⌕ &nbsp; {t('demo.search')}</button>
         <button className="points-banner" onClick={() => navigate('/reward')}>

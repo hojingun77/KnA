@@ -4,13 +4,15 @@ import { listNotifications, markNotificationRead } from '@/data/notificationRepo
 import { getQuestion } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
 import { useEffect, useState } from 'react';
-import QAHeader from '@/components/layout/QAHeader';
+import useHeaderStore from '@/store/headerStore';
 
 export default function NotificationPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [notifications, setNotifications] = useState([]);
+  const { setHeader, clearHeader } = useHeaderStore();
+  useEffect(() => { setHeader({ title: t('notification.title'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
   useEffect(() => { listNotifications(user.id).then(setNotifications); }, [user.id]);
 
   async function openNotification(notification) {
@@ -25,7 +27,7 @@ export default function NotificationPage() {
     return t('ui.notificationAnswer');
   }
 
-  return <div className="screen notification-screen"><QAHeader onBack={() => navigate(-1)} title={t('notification.title')} /><div className="notification-list">
+  return <div className="screen notification-screen"><div className="notification-list">
     {notifications.length ? notifications.map((notification) => <button className={`notification-row${notification.readAt ? '' : ' unread'}`} key={notification.id} onClick={() => openNotification(notification)}>
       <span className={`notification-icon ${notification.type}`} aria-hidden="true">{notification.type === 'adopted' ? '✓' : notification.type === 'reply' ? '▤' : '♧'}</span>
       <span className="notification-copy"><strong>{notificationText(notification)}</strong><small>{notification.type === 'adopted' ? t('ui.notificationAcceptedDetail') : notification.type === 'reply' ? t('ui.notificationReplyDetail') : t('ui.notificationAnswerDetail')}</small></span>

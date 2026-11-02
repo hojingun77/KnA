@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import useHeaderStore from '@/store/headerStore';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { categoryLabel } from '@/constants/categories';
@@ -6,7 +7,6 @@ import { listQuestions } from '@/data/questionRepository';
 import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
-import QAHeader from '@/components/layout/QAHeader';
 
 export default function BoardPage() {
   const { t, i18n } = useTranslation();
@@ -15,6 +15,8 @@ export default function BoardPage() {
   const [params, setParams] = useSearchParams();
   const [questions, setQuestions] = useState([]);
   const [answerCounts, setAnswerCounts] = useState({});
+  const { setHeader, clearHeader } = useHeaderStore();
+  useEffect(() => { setHeader({ title: t('qna.board'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
   useEffect(() => { Promise.all([listQuestions(user.id), getAnswerCounts()]).then(([items, counts]) => { setQuestions(items); setAnswerCounts(counts); }); }, [user.id]);
   const category = params.get('category') ?? 'all';
   const status = params.get('status') ?? 'all';
@@ -24,7 +26,6 @@ export default function BoardPage() {
   );
   return (
     <div className="screen board-screen">
-      <QAHeader onBack={() => navigate('/home')} title={t('qna.board')} />
       <div className="screen-scroll board-scroll">
         <div className="status-pills">
           {['all', 'open', 'adopted', 'urgent'].map((id) => (

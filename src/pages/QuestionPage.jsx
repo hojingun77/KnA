@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import useHeaderStore from '@/store/headerStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { categoryLabel } from '@/constants/categories';
@@ -11,7 +12,6 @@ import useAuthStore from '@/store/authStore';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 import commentInputBg from '@/assets/figma/comment-input-bg.svg';
 import commentSend from '@/assets/figma/comment-send.svg';
-import QAHeader from '@/components/layout/QAHeader';
 import answerAvatarBg from '@/assets/figma/answer-avatar-bg.svg';
 import answerAdoptedCheck from '@/assets/figma/answer-adopted-check.svg';
 import answerMoreDots from '@/assets/figma/answer-more-dots.svg';
@@ -30,7 +30,12 @@ export default function QuestionPage() {
   const [sendingAnswer, setSendingAnswer] = useState(false);
   const [answerError, setAnswerError] = useState('');
   const [menu, setMenu] = useState(false);
+  const { setHeader, clearHeader } = useHeaderStore();
   const [report, setReport] = useState(false);
+  useEffect(() => {
+    setHeader({ title: t('answer.write'), onMore: () => setMenu((v) => !v), showIcons: false });
+    return () => clearHeader();
+  }, [t]); // eslint-disable-line react-hooks/exhaustive-deps
   const [reportedReason, setReportedReason] = useState('');
   const [toast, setToast] = useState('');
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -240,7 +245,6 @@ export default function QuestionPage() {
 
   return (
     <div className="screen question-screen">
-      <QAHeader onBack={() => navigate(-1)} title={t('answer.write')} onMore={() => setMenu(!menu)} />
 
       <div ref={questionScrollRef} className="screen-scroll question-scroll">
         {/* 배지 */}

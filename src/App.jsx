@@ -18,6 +18,7 @@ import SearchPage from '@/pages/SearchPage';
 import { deviceLanguage } from '@/i18n';
 import { ensureDemoData, getDemoUser } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
+import AppHeader from '@/components/layout/AppHeader';
 import homeBottomBar from '@/assets/figma/home-bottom-bar.svg';
 import neutralBottomBar from '@/assets/figma/neutral-bottom-bar.svg';
 import rewardBottomBar from '@/assets/figma/reward-bottom-bar.svg';
@@ -80,6 +81,7 @@ function AppRoutes() {
   const bottomBar = location.pathname === '/home' ? homeBottomBar : location.pathname === '/reward' ? rewardBottomBar : neutralBottomBar;
   return <DeviceFrame>
     <div className="app-shell">
+      <AppHeader />
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
