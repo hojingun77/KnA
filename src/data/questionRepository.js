@@ -28,11 +28,11 @@ export async function isBlocked(ownerId, questionId) {
   return Boolean(await readRecord('blocks', `${ownerId}:${questionId}`));
 }
 
-export async function createQuestion({ ownerId, title, body, category, urgent, files = [] }) {
+export async function createQuestion({ ownerId, title, body, category, urgent, authorLanguage = 'ko', files = [] }) {
   validateAttachments(files);
   const createdAt = new Date().toISOString();
   const id = crypto.randomUUID();
-  const question = { id, ownerId, title, body, category, urgent, rewardTier: 'basic', rewardPoints: urgent ? 150 : 100, rewardSource: 'default', status: 'open', revision: 1, createdAt, updatedAt: createdAt };
+  const question = { id, ownerId, title, body, category, urgent, authorLanguage, rewardTier: 'basic', rewardPoints: urgent ? 150 : 100, rewardSource: 'default', status: 'open', revision: 1, createdAt, updatedAt: createdAt };
   await inTransaction(['questions', 'attachments'], 'readwrite', (tx) => {
     tx.objectStore('questions').add(question);
     for (const file of files) tx.objectStore('attachments').add({ id: crypto.randomUUID(), ownerId, questionId: id, name: file.name, type: file.type, size: file.size, blob: file, createdAt, updatedAt: createdAt, revision: 1 });

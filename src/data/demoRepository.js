@@ -66,6 +66,7 @@ export async function authenticateDemo(email, password) {
 }
 
 export function getDemoUser(id) { return readRecord('users', id); }
+export function getDemoUserSettings(id) { return readRecord('settings', id); }
 
 export async function getPointOverview(ownerId) {
   const [entries, snapshot] = await Promise.all([readAll('pointLedger'), ownerId === 'demo-ghwlsrns03' ? readRecord('pointSnapshots', 'history-demo-ghwlsrns03') : Promise.resolve(null)]);

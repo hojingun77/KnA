@@ -43,7 +43,7 @@ export default function ComposePage() {
     if (!title.trim() || !body.trim()) { setError(t('ui.required')); return; }
     setBusy(true); setError('');
     try {
-      const question = existing ? await updateQuestion(existing, { title: title.trim(), body: body.trim(), category, urgent }, { files, removedAttachmentIds }) : await createQuestion({ ownerId: user.id, title: title.trim(), body: body.trim(), category, urgent, files });
+      const question = existing ? await updateQuestion(existing, { title: title.trim(), body: body.trim(), category, urgent }, { files, removedAttachmentIds }) : await createQuestion({ ownerId: user.id, title: title.trim(), body: body.trim(), category, urgent, authorLanguage: i18n.language, files });
       navigate(existing ? `/qna/${question.id}` : `/qna/${question.id}/complete`, { replace: true });
     } catch { setError(t('common.error')); }
     finally { setBusy(false); }

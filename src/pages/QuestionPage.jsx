@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { categoryLabel } from '@/constants/categories';
 import { blockQuestion, deleteQuestion, getQuestion, isBlocked, listAttachments } from '@/data/questionRepository';
 import { adoptAnswer, createAnswer, listAnswers } from '@/data/answerRepository';
-import { getDemoUser } from '@/data/demoRepository';
+import { getDemoUser, getDemoUserSettings } from '@/data/demoRepository';
 import { DEMO_USERS } from '@/data/demoAccounts';
 import useAuthStore from '@/store/authStore';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
@@ -33,6 +33,7 @@ export default function QuestionPage() {
   const [selectedAnswerId, setSelectedAnswerId] = useState(null);
   const [adoptOpen, setAdoptOpen] = useState(false);
   const [adopting, setAdopting] = useState(false);
+  const [answerTitles, setAnswerTitles] = useState({}); // answerId -> selectedTitle
   const cancelDeleteRef = useRef(null);
   const cancelAdoptRef = useRef(null);
   const questionScrollRef = useRef(null);
@@ -52,6 +53,12 @@ export default function QuestionPage() {
         setQuestion(item);
         setAttachments(files);
         setAnswers(savedAnswers);
+        // 답변자별 칭호 로드
+        const ownerIds = [...new Set(savedAnswers.map((a) => a.ownerId))];
+        const settingsArr = await Promise.all(ownerIds.map((id) => getDemoUserSettings(id)));
+        const titles = {};
+        ownerIds.forEach((id, i) => { if (settingsArr[i]?.selectedTitle) titles[id] = settingsArr[i].selectedTitle; });
+        setAnswerTitles(titles);
       });
   }, [questionId, user.id, navigate]);
 
@@ -80,6 +87,8 @@ export default function QuestionPage() {
     try {
       const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft });
       setAnswers((cur) => [...cur, saved]);
+      const mySettings = await getDemoUserSettings(user.id);
+      if (mySettings?.selectedTitle) setAnswerTitles((cur) => ({ ...cur, [user.id]: mySettings.selectedTitle }));
       setAnswerDraft('');
       requestAnimationFrame(() => { if (questionScrollRef.current) questionScrollRef.current.scrollTop = questionScrollRef.current.scrollHeight; });
     } catch { setAnswerError(t('ui.answerError')); }
@@ -125,7 +134,8 @@ export default function QuestionPage() {
         <div className="qdetail-badges">
           <em className="qdetail-cat">{categoryLabel(question.category, i18n.language)}</em>
           <em className="qdetail-pts">{question.rewardPoints}P</em>
-          {question.urgent && <img className="qdetail-urgent-icon" src={composeUrgentIcon} alt={t('qna.filter.urgent')} />}
+          {question.authorLanguage && <em className="qdetail-lang">{question.authorLanguage.toUpperCase().slice(0,2)}</em>}
+          {question.urgent && <img className="qdetail-urgent-icon qdetail-urgent-end" src={composeUrgentIcon} alt={t('qna.filter.urgent')} />}
         </div>
 
         {/* 제목 / 본문 */}
@@ -162,8 +172,15 @@ export default function QuestionPage() {
                 onKeyDown={(e) => { if (canAdopt && (e.key === 'Enter' || e.key === ' ')) setSelectedAnswerId(isSelected ? null : answer.id); }}
               >
                 <div className="qdetail-answer-header">
-                  <span className="qdetail-answer-avatar" aria-hidden="true" />
+                  {answerTitles[answer.ownerId]
+                    ? <span className="qdetail-answer-avatar-title" aria-hidden="true" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg }}><img src={TITLE_ICONS[answerTitles[answer.ownerId]]} alt="" /></span>
+                    : <span className="qdetail-answer-avatar" aria-hidden="true" />}
                   <strong className="qdetail-answer-nick">{nick}</strong>
+                  {answerTitles[answer.ownerId] && (
+                    <span className="qdetail-title-badge" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg, color: TITLE_COLORS[answerTitles[answer.ownerId]]?.text }}>
+                      {t('titles.names.' + answerTitles[answer.ownerId])}
+                    </span>
+                  )}
                   {isThisAdopted && <span className="qdetail-adopted-tag">{t('answer.adopted')}</span>}
                 </div>
                 <p className="qdetail-answer-body">{answer.body}</p>
