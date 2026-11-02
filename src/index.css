@@ -41,6 +41,7 @@ button { cursor: pointer; }
 .login-submit { margin-top: 8px; }
 .login-submit:disabled, .primary-action:disabled { opacity: .7; }
 .login-error, .form-error { color: #b21e3e; font-size: 12px; line-height: 1.4; }
+.login-error { position: absolute; top: 111px; left: 0; right: 0; line-height: 1.2; }
 .login-links { position: absolute; top: 518px; left: 36px; right: 36px; display: flex; justify-content: space-between; color: #725b68; font-weight: 600; font-size: 14px; }
 .login-divider { position: absolute; top: 567px; left: 32px; right: 32px; display: flex; align-items: center; gap: 12px; color: #776478; font-weight: 600; font-size: 13px; }
 .login-divider::before, .login-divider::after { content: ''; height: 1px; flex: 1; background: #ab9fb3; }
