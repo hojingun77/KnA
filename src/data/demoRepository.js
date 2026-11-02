@@ -2,9 +2,21 @@ import { DEMO_CREDENTIALS, DEMO_USERS } from './demoAccounts.js';
 import { inTransaction, readAll, readRecord } from './database.js';
 
 const now = () => new Date().toISOString();
+const LEGACY_TEST_QUESTION_ID = '84da28f1-738a-4c45-a8cc-db75b96b634f';
 
 export async function ensureDemoData() {
-  await inTransaction(['users', 'settings', 'pointLedger', 'pointSnapshots'], 'readwrite', (tx) => {
+  await inTransaction(['users', 'settings', 'pointLedger', 'pointSnapshots', 'questions', 'attachments'], 'readwrite', (tx) => {
+    const questions = tx.objectStore('questions');
+    questions.get(LEGACY_TEST_QUESTION_ID).onsuccess = (event) => {
+      const question = event.target.result;
+      if (question?.title !== '시연 동작 확인 질문' || question.ownerId !== 'demo-cutetl123' || question.deletedAt) return;
+      const deletedAt = now();
+      questions.put({ ...question, status: 'deleted', deletedAt, updatedAt: deletedAt, revision: question.revision + 1 });
+      const attachments = tx.objectStore('attachments');
+      attachments.getAll().onsuccess = (filesEvent) => {
+        for (const file of filesEvent.target.result) if (file.questionId === question.id) attachments.delete(file.id);
+      };
+    };
     for (const user of DEMO_USERS) {
       const users = tx.objectStore('users');
       const settings = tx.objectStore('settings');
@@ -53,7 +65,7 @@ export async function getPointOverview(ownerId) {
 
 export async function resetDemoData() {
   await inTransaction(['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks'], 'readwrite', (tx) => {
-    for (const name of tx.objectStoreNames) tx.objectStore(name).clear();
+    for (const name of Array.from(tx.objectStoreNames)) tx.objectStore(name).clear();
   });
   await ensureDemoData();
 }

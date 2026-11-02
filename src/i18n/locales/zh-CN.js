@@ -7,6 +7,6 @@ const zh = {
   question: { write: '写问题', category: '分类', title: '标题', content: '内容', attachPhoto: '照片', urgent: '紧急' },
   qna: { board: '问答', searchPlaceholder: '搜索问题', noResults: '没有符合条件的问题。', filter: { all: '全部', open: '未采纳', adopted: '已采纳', urgent: '紧急' } },
   reward: { myPoints: '现有积分', transfer: '兑换' },
-  profile: { title: '我的主页' }, notification: { title: '通知' },
+  profile: { title: '我的主页', personalSection: '我的信息', changeNickname: '修改昵称', changePassword: '修改密码', changeTitle: '修改称号', rewardsSection: '奖励管理', digitalOnnuriLink: '关联数字温暖礼品券', appSettings: '应用设置', notificationSettings: '通知设置', privacyPolicy: '隐私政策', resetAll: '重置全部', resetAgain: '再次点击以清除所有演示数据', resetting: '正在重置...', resetError: '重置失败，请重试。' }, notification: { title: '通知' },
 };
 export default zh;

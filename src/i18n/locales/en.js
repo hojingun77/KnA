@@ -87,6 +87,10 @@ const en = {
   },
   profile: {
     title: 'Profile',
+    personalSection: 'My info', changeNickname: 'Change nickname', changePassword: 'Change password', changeTitle: 'Change my title',
+    rewardsSection: 'Rewards', digitalOnnuriLink: 'Digital Onnuri link',
+    appSettings: 'App settings', notificationSettings: 'Notification settings', privacyPolicy: 'Privacy policy',
+    resetAll: 'Reset all', resetAgain: 'Tap again to erase all demo data', resetting: 'Resetting...', resetError: 'Could not reset. Please try again.',
     myQuestions: 'My Questions',
     myAnswers: 'My Answers',
     points: 'Point Balance',

@@ -7,6 +7,6 @@ const vi = {
   question: { write: 'Đặt câu hỏi', category: 'Danh mục', title: 'Tiêu đề', content: 'Nội dung', attachPhoto: 'Ảnh', urgent: 'Khẩn cấp' },
   qna: { board: 'Hỏi đáp', searchPlaceholder: 'Tìm câu hỏi', noResults: 'Không tìm thấy câu hỏi.', filter: { all: 'Tất cả', open: 'Chưa chọn', adopted: 'Đã chọn', urgent: 'Khẩn cấp' } },
   reward: { myPoints: 'Điểm hiện có', transfer: 'Đổi' },
-  profile: { title: 'Hồ sơ' }, notification: { title: 'Thông báo' },
+  profile: { title: 'Hồ sơ', personalSection: 'Thông tin của tôi', changeNickname: 'Đổi biệt danh', changePassword: 'Đổi mật khẩu', changeTitle: 'Đổi danh hiệu', rewardsSection: 'Quản lý điểm thưởng', digitalOnnuriLink: 'Liên kết Digital Onnuri', appSettings: 'Cài đặt ứng dụng', notificationSettings: 'Cài đặt thông báo', privacyPolicy: 'Chính sách quyền riêng tư', resetAll: 'Đặt lại tất cả', resetAgain: 'Nhấn lần nữa để xóa dữ liệu demo', resetting: 'Đang đặt lại...', resetError: 'Không thể đặt lại. Vui lòng thử lại.' }, notification: { title: 'Thông báo' },
 };
 export default vi;

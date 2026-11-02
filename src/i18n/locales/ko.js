@@ -87,6 +87,10 @@ const ko = {
   },
   profile: {
     title: '프로필',
+    personalSection: '내 정보', changeNickname: '닉네임 변경', changePassword: '비밀번호 변경', changeTitle: '내 칭호 변경',
+    rewardsSection: '리워드 관리', digitalOnnuriLink: '디지털온누리 연동',
+    appSettings: '앱 설정', notificationSettings: '알림 설정', privacyPolicy: '개인정보 처리방침',
+    resetAll: '전체초기화', resetAgain: '한 번 더 누르면 모든 시연 데이터가 초기화돼요', resetting: '초기화 중...', resetError: '초기화하지 못했습니다. 다시 시도해주세요.',
     myQuestions: '내 질문',
     myAnswers: '내 답변',
     points: '포인트 잔액',
