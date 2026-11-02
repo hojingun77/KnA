@@ -55,13 +55,16 @@ button { cursor: pointer; }
 .brand-header strong { font-size: 24px; font-weight: 500; }
 .brand-header div { display: flex; gap: 16px; }
 .brand-header button { color: white; font-size: 24px; border: none; background: none; }
+/* ── 리워드 상단바 아이콘 ── */
+.reward-header-icons { display: block; width: 54px; height: 21px; }
+
 /* ── Q&A 공통 상단바 (질문 답변 상단 프레임) ── */
 .qa-header { position: relative; height: 82px; flex-shrink: 0; }
 .qa-header-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-.qa-header-inner { position: relative; display: flex; align-items: flex-end; padding: 0 20px 14px; height: 100%; gap: 0; }
+.qa-header-inner { position: relative; display: flex; align-items: center; padding: 40px 21px 7px; height: 100%; gap: 0; }
 .qa-header-back { display: grid; place-items: center; width: 32px; height: 32px; border: 0; background: transparent; flex-shrink: 0; padding: 0; }
 .qa-header-back img { display: block; width: 11px; height: 20px; }
-.qa-header-title { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 18px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 60px; pointer-events: none; }
+.qa-header-title { position: absolute; left: 0; right: 0; top: 40px; bottom: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 60px; pointer-events: none; }
 .qa-header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .qa-header-more { display: grid; place-items: center; width: 32px; height: 32px; border: 0; background: transparent; padding: 0; }
 .qa-header-more img { display: block; width: 5px; height: 20px; }
@@ -160,7 +163,7 @@ button { cursor: pointer; }
 .answer-placeholder .answer-card p { margin-top: 9px; text-align: left; color: #111; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 .question-scroll h2 { margin-top: 14px; font-size: 22px; line-height: 1.3; }.question-meta { color: #8a94a3; font-size: 13px; margin: 10px 0 25px; }.question-body { white-space: pre-wrap; line-height: 1.6; }.attachment-image { width: 100%; margin-top: 10px; border-radius: 12px; }.answer-placeholder { border-top: 1px solid #e6eaf0; margin-top: 25px; padding-top: 20px; }.answer-placeholder p { color: #8a94a3; margin-top: 20px; text-align: center; }.owner-actions { display: flex; gap: 10px; margin-top: 20px; }.owner-actions button { padding: 6px 12px; }
 .question-menu { position: absolute; top: 76px; right: 12px; z-index: 11; background: white; box-shadow: 0 4px 20px #0003; border-radius: 12px; display: grid; }.question-menu button { padding: 12px 28px; text-align: left; border: none; background: none; }
-.points-toolbar { height: 50px; padding: 8px 22px; display: flex; align-items: center; justify-content: space-between; }.points-toolbar button { background: none; border: none; font-size: 20px; color: #303844; }.points-toolbar span { font-size: 23px; }.points-scroll { height: calc(100% - 132px); padding: 14px 10px 110px; }.points-scroll>.points-banner { margin-top: 0; }.points-scroll h2 { font-size: 18px; margin: 20px 12px 12px; }.information-banner { border: 1px solid #e0e5ed; border-radius: 14px; margin: 20px 9px 0; padding: 15px; color: #4b5563; font-size: 13px; }.history-row { display: flex; align-items: center; gap: 10px; min-height: 72px; margin: 0 12px; padding: 8px 4px; border-bottom: 1px solid #e5e7eb; }.history-row:last-of-type { border-bottom: 0; }.history-icon { width: 35px; height: 36px; flex: 0 0 35px; }.history-details { min-width: 0; flex: 1; }.history-row strong,.history-row small { display: block; }.history-row strong { font-size: 15px; color: #111; }.history-row small { color: #9ca3af; margin-top: 3px; font-size: 12.5px; }.history-row b { font-size: 15px; white-space: nowrap; }.history-row b.positive { color: #33dfa5; }.history-row b.negative { color: #dc2626; }
+.points-toolbar { height: 50px; padding: 8px 22px; display: flex; align-items: center; justify-content: space-between; }.points-toolbar button { background: none; border: none; font-size: 20px; color: #303844; }.points-toolbar span { font-size: 23px; }.points-scroll { height: calc(100% - 82px); padding: 14px 10px 110px; }.points-scroll>.points-banner { margin-top: 0; }.points-scroll h2 { font-size: 18px; margin: 20px 12px 12px; }.information-banner { border: 1px solid #e0e5ed; border-radius: 14px; margin: 20px 9px 0; padding: 15px; color: #4b5563; font-size: 13px; }.history-row { display: flex; align-items: center; gap: 10px; min-height: 72px; margin: 0 12px; padding: 8px 4px; border-bottom: 1px solid #e5e7eb; }.history-row:last-of-type { border-bottom: 0; }.history-icon { width: 35px; height: 36px; flex: 0 0 35px; }.history-details { min-width: 0; flex: 1; }.history-row strong,.history-row small { display: block; }.history-row strong { font-size: 15px; color: #111; }.history-row small { color: #9ca3af; margin-top: 3px; font-size: 12.5px; }.history-row b { font-size: 15px; white-space: nowrap; }.history-row b.positive { color: #33dfa5; }.history-row b.negative { color: #dc2626; }
 .modal-backdrop { position: absolute; inset: 0; background: #1d1b265e; z-index: 15; display: flex; align-items: flex-end; }.conversion-sheet { width: 100%; padding: 7px 20px 24px; border-radius: 24px 24px 0 0; background: white; }.sheet-handle { height: 5px; width: 40px; border-radius: 9px; margin: 0 auto 19px; background: #e0dfe5; }.conversion-sheet h2 { font-size: 20px; font-weight: 700; }.conversion-sheet p { margin-top: 8px; font-size: 13px; color: #7c7a88; }.conversion-sheet>label { display: block; margin: 18px 0 8px; color: #7c7a88; font-size: 13px; }.amount-field { height: 48px; display: flex; align-items: center; border: 1px solid #b6b0dd; border-radius: 14px; padding: 0 14px; }.amount-field input { flex: 1; width: 100%; border: none; outline: none; font-size: 24px; font-weight: 700; }.amount-field span { color: #616161; font-weight: 700; }.connection-row { display: flex; justify-content: space-between; padding: 14px; margin: 16px 0; background: #f4f3f8; border-radius: 13px; font-size: 14px; }.connection-row strong { color: #e52331; }.conversion-sheet .primary-action, .cancel-action { width: 100%; height: 55px; }.cancel-action { border: 1px solid #e3e0eb; border-radius: 15px; background: white; margin-top: 9px; font-weight: 700; color: #565263; }.toast { position: absolute; bottom: 95px; left: 22px; right: 22px; z-index: 30; padding: 13px; border-radius: 12px; text-align: center; color: white; background: #292b36eb; font-size: 14px; animation: fade-toast 2.5s forwards; }@keyframes fade-toast { 0%{opacity:0} 12%{opacity:1} 75%{opacity:1} 100%{opacity:0} }
 .delete-backdrop { align-items: center; justify-content: center; padding: 24px; }
 .delete-dialog { width: 100%; padding: 24px; border-radius: 20px; background: #fff; box-shadow: 0 16px 42px #18151e36; animation: mock-pop .22s ease-out; }
@@ -177,9 +180,9 @@ button { cursor: pointer; }
 
 /* Figma 상단바와 다국어 카테고리 */
 .brand-header .brand-home { padding: 0; font-size: 24px; font-weight: 500; line-height: 1.2; }
-.brand-header .header-actions { display: flex; align-items: center; gap: 10px; }
-.brand-header .header-actions button { display: grid; place-items: center; width: 26px; height: 26px; padding: 0; }
-.brand-header .header-actions svg { width: 22px; height: 22px; }
+.header-actions { display: flex; align-items: center; gap: 16px; }
+.header-actions button { position: relative; display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border: none; background: none; }
+.header-actions img { width: 18px; height: 20px; display: block; }
 .compose-subbar { height: 54px; padding: 8px 14px 5px; display: flex; align-items: center; gap: 8px; }
 .compose-subbar button { width: 26px; height: 36px; border: 0; background: none; color: #485367; font-size: 22px; }
 .compose-subbar h1 { font-size: 20px; font-weight: 700; }
