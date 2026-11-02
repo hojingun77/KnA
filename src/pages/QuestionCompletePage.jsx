@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getQuestion } from '@/data/questionRepository';
+import QAHeader from '@/components/layout/QAHeader';
 import { categoryLabel } from '@/constants/categories';
 import checkIcon from '@/assets/figma/question-complete.svg';
-import BrandHeader from '@/components/layout/BrandHeader';
 
 const CONFETTI_COLORS = ['#e46f99', '#6f82d1', '#f6c762', '#72c9a6'];
 
@@ -17,7 +17,7 @@ export default function QuestionCompletePage() {
   if (question === undefined) return <p className="center-message">{t('common.loading')}</p>;
   if (question === null) return <div className="center-message"><button onClick={() => navigate('/qna')}>{t('qna.noResults')}</button></div>;
   const base = question.urgent ? question.rewardPoints / 1.5 : question.rewardPoints;
-  return <div className="screen complete-screen"><BrandHeader /><div className="complete-body">
+  return <div className="screen complete-screen"><QAHeader onBack={() => navigate('/home')} /><div className="complete-body">
     <div className="complete-confetti" aria-hidden="true">{Array.from({ length: 12 }, (_, index) => <i key={index} style={{ left: `${12 + (index * 29) % 76}%`, backgroundColor: CONFETTI_COLORS[index % 4], animationDelay: `${(index % 4) * 0.08}s` }} />)}</div>
     <img src={checkIcon} alt="" /><small>{t('ui.registered')}</small><h1>{t('ui.questionPosted')}</h1><p>{t('ui.defaultRewardNotice')}</p>
     <div className="complete-reward"><span>{t('ui.fixedReward')}</span><strong>{question.rewardPoints}P</strong><div><span>{t('question.urgent')}<b>{question.urgent ? `+${question.rewardPoints - base}P` : '—'}</b></span><span>{t('question.category')}<b>{categoryLabel(question.category, i18n.language)}</b></span><span>{t('ui.basicReward')}<b>+{base}P</b></span></div><p>{t('ui.defaultRewardReason')}</p></div>

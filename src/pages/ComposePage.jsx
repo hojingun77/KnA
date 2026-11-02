@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 import { createQuestion, getQuestion, listAttachments, updateQuestion } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
-import BrandHeader from '@/components/layout/BrandHeader';
 import composePhotoBg from '@/assets/figma/compose-photo-bg.svg';
+import QAHeader from '@/components/layout/QAHeader';
 import composePhotoIcon from '@/assets/figma/compose-photo-icon.svg';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
-import BackButton from '@/components/ui/BackButton';
 
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -49,7 +48,7 @@ export default function ComposePage() {
     } catch { setError(t('common.error')); }
     finally { setBusy(false); }
   }
-  return <div className={`screen compose-screen${i18n.language === 'vi' ? ' compose-vi' : ''}`}><BrandHeader /><header className="compose-subbar"><BackButton onClick={() => navigate(-1)} /><h1>{t('question.write')}</h1></header><form className="compose-form" onSubmit={submit}>
+  return <div className={`screen compose-screen${i18n.language === 'vi' ? ' compose-vi' : ''}`}><QAHeader onBack={() => navigate(-1)} title={t('question.write')} /><form className="compose-form" onSubmit={submit}>
     <label>{t('question.category')}</label><div className="compose-categories">{CATEGORIES.map(([id]) => <button key={id} type="button" className={category === id ? 'selected' : ''} onClick={() => setCategory(id)}><img src={CATEGORY_ICONS[id]} alt="" />{categoryLabel(id, i18n.language)}</button>)}</div>
     <label htmlFor="question-title">{t('question.title')}</label><input id="question-title" maxLength={100} value={title} onChange={(event) => setTitle(event.target.value)} placeholder={t('ui.titlePlaceholder')} />
     <label htmlFor="question-body">{t('question.content')}</label><textarea id="question-body" maxLength={2000} value={body} onChange={(event) => setBody(event.target.value)} placeholder={t('ui.bodyPlaceholder')} />

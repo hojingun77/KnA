@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import BrandHeader from '@/components/layout/BrandHeader';
 import { listNotifications, markNotificationRead } from '@/data/notificationRepository';
 import { getQuestion } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
-import BackButton from '@/components/ui/BackButton';
 import { useEffect, useState } from 'react';
+import QAHeader from '@/components/layout/QAHeader';
 
 export default function NotificationPage() {
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export default function NotificationPage() {
     return t('ui.notificationAnswer');
   }
 
-  return <div className="screen notification-screen"><BrandHeader /><div className="board-title"><BackButton onClick={() => navigate(-1)} /><h1>{t('notification.title')}</h1></div><div className="notification-list">
+  return <div className="screen notification-screen"><QAHeader onBack={() => navigate(-1)} title={t('notification.title')} /><div className="notification-list">
     {notifications.length ? notifications.map((notification) => <button className={`notification-row${notification.readAt ? '' : ' unread'}`} key={notification.id} onClick={() => openNotification(notification)}>
       <span className={`notification-icon ${notification.type}`} aria-hidden="true">{notification.type === 'adopted' ? '✓' : notification.type === 'reply' ? '▤' : '♧'}</span>
       <span className="notification-copy"><strong>{notificationText(notification)}</strong><small>{notification.type === 'adopted' ? t('ui.notificationAcceptedDetail') : notification.type === 'reply' ? t('ui.notificationReplyDetail') : t('ui.notificationAnswerDetail')}</small></span>

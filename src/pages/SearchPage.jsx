@@ -7,6 +7,7 @@ import { addRecentSearch, clearRecentSearches, getRecentSearches, removeRecentSe
 import useAuthStore from '@/store/authStore';
 import BackButton from '@/components/ui/BackButton';
 import searchField from '@/assets/figma/search-field.svg';
+import qaHeaderBg from '@/assets/figma/qa-header-bg.svg';
 import searchIcon from '@/assets/figma/search-icon.svg';
 import searchRemove from '@/assets/figma/search-remove.svg';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
@@ -45,7 +46,8 @@ export default function SearchPage() {
 
   return (
     <div className="screen search-screen">
-      <div className="search-toolbar">
+      <div className="search-toolbar search-toolbar-qa">
+        <img className="search-toolbar-bg" src={qaHeaderBg} alt="" aria-hidden="true" />
         <BackButton className="search-back" onClick={() => navigate(-1)} />
         <form className="search-form" onSubmit={submit}>
           <img className="search-field-bg" src={searchField} alt="" />
@@ -79,18 +81,16 @@ export default function SearchPage() {
           <>
             <h1 className="search-results-title">{t('ui.searchResults', { count: results.length })}</h1>
             {results.length ? results.map((question) => (
-              <button className="question-card" type="button" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+              <button className={`question-card${question.status === 'adopted' ? ' adopted' : ''}`} type="button" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+                {question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}
                 <span className="card-badges">
                   <em>{categoryLabel(question.category, i18n.language)}</em>
-                  {question.status === 'adopted'
-                    ? <em className="adopted-tag">✓ {t('qna.filter.adopted')}</em>
-                    : <em className="points-tag">{question.rewardPoints}P</em>}
+                  <em className="points-tag">{question.rewardPoints}P</em>
                   {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
                 </span>
                 <strong>{question.title}</strong>
                 <small>
-                  <span>{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>
-                  {question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}
+                  <span className="card-meta-right">{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>
                 </small>
               </button>
             )) : <p className="search-empty">{t('ui.noSearchResults')}</p>}

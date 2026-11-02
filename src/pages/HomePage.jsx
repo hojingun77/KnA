@@ -5,7 +5,6 @@ import { getPointOverview } from '@/data/demoRepository';
 import { listQuestions } from '@/data/questionRepository';
 import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
-import { DEMO_USERS } from '@/data/demoAccounts';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 import BrandHeader from '@/components/layout/BrandHeader';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
@@ -43,14 +42,18 @@ export default function HomePage() {
           <button onClick={() => navigate('/qna')}>{t('ui.more')}</button>
         </div>
         {questions.length ? questions.slice(0, 3).map((question) => (
-          <button className="question-card" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+          <button className={`question-card${question.status === 'adopted' ? ' adopted' : ''}`} key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+            {question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}
             <span className="card-badges">
               <em>{categoryLabel(question.category, i18n.language)}</em>
               <em className="points-tag">{question.rewardPoints}P</em>
               {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
             </span>
             <strong>{question.title}</strong>
-            <small><span>{DEMO_USERS.find((e) => e.id === question.ownerId)?.nickname ?? 'K&A'} · {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}</span>{question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}</small>
+            <small>
+              {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}
+              <span className="card-meta-right">{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>
+            </small>
           </button>
         )) : (
           <div className="empty-card">

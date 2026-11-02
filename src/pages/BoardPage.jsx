@@ -5,9 +5,8 @@ import { categoryLabel } from '@/constants/categories';
 import { listQuestions } from '@/data/questionRepository';
 import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
-import BrandHeader from '@/components/layout/BrandHeader';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
-import BackButton from '@/components/ui/BackButton';
+import QAHeader from '@/components/layout/QAHeader';
 
 export default function BoardPage() {
   const { t, i18n } = useTranslation();
@@ -25,11 +24,7 @@ export default function BoardPage() {
   );
   return (
     <div className="screen board-screen">
-      <BrandHeader />
-      <div className="board-title">
-        <BackButton onClick={() => navigate('/home')} />
-        <h1>{t('qna.board')}</h1>
-      </div>
+      <QAHeader onBack={() => navigate('/home')} title={t('qna.board')} />
       <div className="screen-scroll board-scroll">
         <div className="status-pills">
           {['all', 'open', 'adopted', 'urgent'].map((id) => (
@@ -39,18 +34,17 @@ export default function BoardPage() {
           ))}
         </div>
         {filtered.length ? filtered.map((item) => (
-          <button className="question-card" key={item.id} onClick={() => navigate(`/qna/${item.id}`)}>
+          <button className={`question-card${item.status === 'adopted' ? ' adopted' : ''}`} key={item.id} onClick={() => navigate(`/qna/${item.id}`)}>
+            {item.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}
             <span className="card-badges">
               <em>{categoryLabel(item.category, i18n.language)}</em>
-              {item.status === 'adopted'
-                ? <em className="adopted-tag">✓ {t('qna.filter.adopted')}</em>
-                : <em className="points-tag">{item.rewardPoints}P</em>}
+              <em className="points-tag">{item.rewardPoints}P</em>
               {item.authorLanguage && <em className="card-lang">{item.authorLanguage.toUpperCase().slice(0, 2)}</em>}
             </span>
             <strong>{item.title}</strong>
             <small>
               {t('ui.answers', { count: answerCounts[item.id] ?? 0 })}
-              <span className="card-meta-right">{new Date(item.createdAt).toLocaleDateString(i18n.language)}{item.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}</span>
+              <span className="card-meta-right">{new Date(item.createdAt).toLocaleDateString(i18n.language)}</span>
             </small>
           </button>
         )) : <div className="empty-card">{t('qna.noResults')}</div>}
