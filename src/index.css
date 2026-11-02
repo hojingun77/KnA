@@ -348,7 +348,7 @@ button { cursor: pointer; }
 .loading-track i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #bc4f7e 36%, #3676de); transition: width .5s; }
 .loading-bottom span { display: block; margin-top: 12px; }
 .titles-scroll { height: 100%; overflow-y: auto; padding: 16px 13px 122px; }
-.titles-summary { position: relative; min-height: 112px; padding: 12px 18px 18px; border-radius: 20px; background: linear-gradient(105deg, #a24261, #5f70ad); color: #fff; }
+.titles-summary { position: relative; min-height: 112px; padding: 12px 18px 18px; border-radius: 20px; background: linear-gradient(105deg, #a24261, #805987, #5f70ad, #a24261); background-size: 300% 100%; color: #fff; animation: gradient-flow 8s ease infinite; }
 .titles-summary small, .titles-summary strong, .titles-summary span:not(.titles-applied) { display: block; }
 .titles-summary small { font-size: 12px; }
 .titles-summary strong { margin-top: 3px; max-width: calc(100% - 125px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 23px; line-height: 1.2; }
@@ -414,7 +414,7 @@ button { cursor: pointer; }
 
 @keyframes mock-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes mock-fall { 0% { transform: translateY(-40px) rotate(0); opacity: 0; } 12% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(240px) rotate(300deg); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } .points-banner { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } .points-banner, .titles-summary { animation: none; } }
 
 /* Figma 06_질문&게시판_선택: speech-bubble choices */
 .choose-overlay { justify-content: flex-start; gap: 65px; padding: 0 31px 6px 27px; }

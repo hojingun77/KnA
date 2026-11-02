@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useHeaderStore from '@/store/headerStore';
+import { createPortal } from 'react-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
@@ -34,7 +35,7 @@ export default function ComposePage() {
   // 개발 모드(StrictMode)는 마운트→정리→재마운트를 한 번 더 하므로 재마운트 때 true로 되돌린다.
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: t('question.write'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
+  useEffect(() => { const owner = setHeader({ title: t('question.write'), onMore: null, showIcons: false }); return () => clearHeader(owner); }, [t]);
   useEffect(() => { if (questionId) Promise.all([getQuestion(questionId), listAttachments(questionId)]).then(([question, attachments]) => {
     if (!question || question.ownerId !== user.id) { navigate('/qna', { replace: true }); return; }
     setExisting(question); setCategory(question.category); setTitle(question.title); setBody(question.body); setUrgent(question.urgent); setSavedFiles(attachments);
@@ -101,7 +102,8 @@ export default function ComposePage() {
     {error && <p className="form-error" role="alert">{error}</p>}
     <button className="primary-action" disabled={busy} type="submit">{busy ? t('common.loading') : existing ? t('common.save') : t('ui.post')}</button>
   </form>
-  {rewardPhase && <div className="modal-backdrop reward-backdrop">
+  {/* 페이지 전환 레이어(transform) 안에서는 하단 탭바 아래에 가려지므로, 보상 분류 창은 앱 전체(.app-shell) 위로 띄운다. */}
+  {rewardPhase && createPortal(<div className="modal-backdrop reward-backdrop">
     <section className="delete-dialog reward-dialog" role={rewardPhase === 'failed' ? 'alertdialog' : 'status'} aria-modal="true" aria-live="polite">
       {rewardPhase === 'analyzing' ? <>
         <span className="reward-spinner" aria-hidden="true" />
@@ -116,6 +118,6 @@ export default function ComposePage() {
         </div>
       </>}
     </section>
-  </div>}
+  </div>, document.querySelector('.app-shell') ?? document.body)}
   </div>;
 }

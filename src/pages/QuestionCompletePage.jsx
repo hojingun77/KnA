@@ -14,7 +14,7 @@ export default function QuestionCompletePage() {
   const navigate = useNavigate();
   const [question, setQuestion] = useState(undefined);
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: null, onMore: null, showIcons: false }); return () => clearHeader(); }, []);
+  useEffect(() => { const owner = setHeader({ title: null, onMore: null, showIcons: false }); return () => clearHeader(owner); }, []);
   useEffect(() => { getQuestion(questionId).then(setQuestion); }, [questionId]);
   if (question === undefined) return <p className="center-message">{t('common.loading')}</p>;
   if (question === null) return <div className="center-message"><button onClick={() => navigate('/qna')}>{t('qna.noResults')}</button></div>;

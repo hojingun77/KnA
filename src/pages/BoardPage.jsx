@@ -17,7 +17,7 @@ export default function BoardPage() {
   const [questions, setQuestions] = useState([]);
   const [answerCounts, setAnswerCounts] = useState({});
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: t('qna.board'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
+  useEffect(() => { const owner = setHeader({ title: t('qna.board'), onMore: null, showIcons: false }); return () => clearHeader(owner); }, [t]);
   useEffect(() => { Promise.all([listQuestions(user.id), getAnswerCounts()]).then(([items, counts]) => { setQuestions(items); setAnswerCounts(counts); }); }, [user.id]);
   const category = params.get('category') ?? 'all';
   const status = params.get('status') ?? 'all';

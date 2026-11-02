@@ -35,8 +35,8 @@ export default function QuestionPage() {
   const { setHeader, clearHeader } = useHeaderStore();
   const [report, setReport] = useState(false);
   useEffect(() => {
-    setHeader({ title: t('answer.write'), onMore: () => setMenu((v) => !v), showIcons: false });
-    return () => clearHeader();
+    const owner = setHeader({ title: t('answer.write'), onMore: () => setMenu((v) => !v), showIcons: false });
+    return () => clearHeader(owner);
   }, [t]); // eslint-disable-line react-hooks/exhaustive-deps
   const [reportedReason, setReportedReason] = useState('');
   const [toast, setToast] = useState('');
