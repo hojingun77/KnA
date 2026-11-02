@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import useHeaderStore from '@/store/headerStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 import { createQuestion, getQuestion, listAttachments, updateQuestion } from '@/data/questionRepository';
 import useAuthStore from '@/store/authStore';
-import BrandHeader from '@/components/layout/BrandHeader';
 import composePhotoBg from '@/assets/figma/compose-photo-bg.svg';
 import composePhotoIcon from '@/assets/figma/compose-photo-icon.svg';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
-import BackButton from '@/components/ui/BackButton';
 import { classifyReward, getCapabilities } from '@/api/llm';
 
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -34,6 +33,8 @@ export default function ComposePage() {
   const mounted = useRef(true);
   // 개발 모드(StrictMode)는 마운트→정리→재마운트를 한 번 더 하므로 재마운트 때 true로 되돌린다.
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  const { setHeader, clearHeader } = useHeaderStore();
+  useEffect(() => { setHeader({ title: t('question.write'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
   useEffect(() => { if (questionId) Promise.all([getQuestion(questionId), listAttachments(questionId)]).then(([question, attachments]) => {
     if (!question || question.ownerId !== user.id) { navigate('/qna', { replace: true }); return; }
     setExisting(question); setCategory(question.category); setTitle(question.title); setBody(question.body); setUrgent(question.urgent); setSavedFiles(attachments);
@@ -89,7 +90,7 @@ export default function ComposePage() {
     setBusy(true); setRewardPhase('analyzing');
     register({ source: 'default', defaultReason: rewardFailure ?? 'unavailable' });
   }
-  return <div className={`screen compose-screen${i18n.language === 'vi' ? ' compose-vi' : ''}`}><BrandHeader /><header className="compose-subbar"><BackButton onClick={() => navigate(-1)} /><h1>{t('question.write')}</h1></header><form className="compose-form" onSubmit={submit}>
+  return <div className={`screen compose-screen${i18n.language === 'vi' ? ' compose-vi' : ''}`}><form className="compose-form" onSubmit={submit}>
     <label>{t('question.category')}</label><div className="compose-categories">{CATEGORIES.map(([id]) => <button key={id} type="button" className={category === id ? 'selected' : ''} onClick={() => setCategory(id)}><img src={CATEGORY_ICONS[id]} alt="" />{categoryLabel(id, i18n.language)}</button>)}</div>
     <label htmlFor="question-title">{t('question.title')}</label><input id="question-title" maxLength={100} value={title} onChange={(event) => setTitle(event.target.value)} placeholder={t('ui.titlePlaceholder')} />
     <label htmlFor="question-body">{t('question.content')}</label><textarea id="question-body" maxLength={2000} value={body} onChange={(event) => setBody(event.target.value)} placeholder={t('ui.bodyPlaceholder')} />

@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
+import useHeaderStore from '@/store/headerStore';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import BrandHeader from '@/components/layout/BrandHeader';
 import { categoryLabel } from '@/constants/categories';
 import { DEFAULT_TITLE, TITLE_CATEGORIES, TITLE_GOAL, TITLE_ICONS, titleProgress } from '@/constants/titles';
 import { readRecord, writeRecord } from '@/data/database';
 import useAuthStore from '@/store/authStore';
-import BackButton from '@/components/ui/BackButton';
 
 export default function TitlePage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
+  const { setHeader, clearHeader } = useHeaderStore();
+  useEffect(() => { setHeader({ title: null, onMore: null, showIcons: false }); return () => clearHeader(); }, []);
   const progress = titleProgress(user.id);
   const unlocked = progress === TITLE_GOAL;
   const [selected, setSelected] = useState(unlocked ? DEFAULT_TITLE : null);
@@ -42,7 +43,7 @@ export default function TitlePage() {
     } finally { setBusy(false); }
   }
 
-  return <div className="screen titles-screen"><BrandHeader /><div className="titles-toolbar"><BackButton onClick={() => navigate(-1)} /></div>
+  return <div className="screen titles-screen">
     <div className="titles-scroll">
       <section className="titles-summary">
         <div><small>{t('titles.current')}</small><strong>{selected ? t(`titles.names.${selected}`) : t('titles.none')}</strong><span>{t('titles.achieved', { count: unlocked ? TITLE_CATEGORIES.length : 0, total: TITLE_CATEGORIES.length })} · {t('titles.average')} <b>{progress}%</b></span></div>

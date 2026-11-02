@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
+import useHeaderStore from '@/store/headerStore';
 import { useTranslation } from 'react-i18next';
 import { getPointOverview } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
-import BrandHeader from '@/components/layout/BrandHeader';
 import adoptedIcon from '@/assets/figma/reward-history-adopted.svg';
 import convertedIcon from '@/assets/figma/reward-history-converted.svg';
-import BackButton from '@/components/ui/BackButton';
 
 function formatDate(isoString, language) {
   if (!isoString) return '';
@@ -18,6 +17,8 @@ export default function PointsPage() {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const [overview, setOverview] = useState(null);
+  const { setHeader, clearHeader } = useHeaderStore();
+  useEffect(() => { setHeader({ title: null, onMore: null, showIcons: true }); return () => clearHeader(); }, []);
   const [convert, setConvert] = useState(false);
   const [amount, setAmount] = useState('1000');
   const [toast, setToast] = useState('');
@@ -56,8 +57,6 @@ export default function PointsPage() {
 
   return (
     <div className="screen points-screen">
-      <BrandHeader />
-      <div className="points-toolbar"><BackButton onClick={() => navigate('/home')} /></div>
       <div className="screen-scroll points-scroll">
         <button className="points-banner" onClick={() => setConvert(true)}>
           <span>{t('demo.myPoints')}<strong>{overview ? overview.balance.toLocaleString() : '…'}P</strong><small>{overview?.snapshot ? t('ui.monthly') : ''}</small></span>
@@ -71,7 +70,7 @@ export default function PointsPage() {
             <span className="history-details"><strong>{row.label}</strong>{row.date && <small>{row.date}</small>}</span>
             <b className={row.amount > 0 ? 'positive' : 'negative'}>{row.amount > 0 ? '+' : ''}{row.amount.toLocaleString()}</b>
           </div>
-        )) : <div className="empty-card">{t('demo.history')} 0</div>}
+        )) : <div className="empty-card"><p>{t('ui.pointsHistoryEmpty')}</p></div>}
       </div>
       {convert && (
         <div className="modal-backdrop">

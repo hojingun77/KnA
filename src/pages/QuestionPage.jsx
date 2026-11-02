@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import useHeaderStore from '@/store/headerStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { categoryLabel } from '@/constants/categories';
@@ -11,7 +12,11 @@ import useAuthStore from '@/store/authStore';
 import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 import commentInputBg from '@/assets/figma/comment-input-bg.svg';
 import commentSend from '@/assets/figma/comment-send.svg';
-import BackButton from '@/components/ui/BackButton';
+import answerAvatarBg from '@/assets/figma/answer-avatar-bg.svg';
+import answerAdoptedCheck from '@/assets/figma/answer-adopted-check.svg';
+import answerMoreDots from '@/assets/figma/answer-more-dots.svg';
+import answerMenuEdit from '@/assets/figma/answer-menu-panel.svg';
+import answerScoreBorder from '@/assets/figma/answer-score-border.svg';
 import TranslateToggle from '@/components/ui/TranslateToggle';
 import useAutoTranslation from '@/hooks/useAutoTranslation';
 
@@ -27,7 +32,12 @@ export default function QuestionPage() {
   const [sendingAnswer, setSendingAnswer] = useState(false);
   const [answerError, setAnswerError] = useState('');
   const [menu, setMenu] = useState(false);
+  const { setHeader, clearHeader } = useHeaderStore();
   const [report, setReport] = useState(false);
+  useEffect(() => {
+    setHeader({ title: t('answer.write'), onMore: () => setMenu((v) => !v), showIcons: false });
+    return () => clearHeader();
+  }, [t]); // eslint-disable-line react-hooks/exhaustive-deps
   const [reportedReason, setReportedReason] = useState('');
   const [toast, setToast] = useState('');
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -155,10 +165,9 @@ export default function QuestionPage() {
       setQuestion(updatedQ);
       setAnswers((cur) => cur.map((a) => a.id === adopted.id ? adopted : a));
       setAdoptOpen(false);
-      navigate(`/qna/${question.id}/adopt-done`, {
-        replace: true,
-        state: { answer: adopted, question: updatedQ, answererNick: selectedAnswererNick },
-      });
+      setSelectedAnswerId(null);
+      setToast(t('ui.adoptToast'));
+      setTimeout(() => setToast(''), 3000);
     } catch { setAdopting(false); }
   }
 
@@ -170,27 +179,79 @@ export default function QuestionPage() {
     const isSelected = selectedAnswerId === answer.id;
     const isThisAdopted = answer.adopted;
     const isEditing = editingAnswerId === answer.id;
+    const isMyAnswer = answer.ownerId === user.id;
     const replies = answers.filter((item) => item.parentAnswerId === answer.id);
-    return <div className="qdetail-answer-thread" key={answer.id} style={{ marginLeft: depth ? `${Math.min(depth, 3) * 12}px` : 0 }}>
+    const createdDate = new Date(answer.createdAt).toLocaleString(i18n.language, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return <div className="qdetail-answer-thread" key={answer.id} style={{ marginLeft: depth ? `${Math.min(depth, 3) * 16}px` : 0 }}>
       <article
-        className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}`}
+        className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}${replyTargetId === answer.id ? ' reply-target' : ''}`}
         onClick={() => { if (canAdopt) setSelectedAnswerId(isSelected ? null : answer.id); }}
         role={canAdopt ? 'button' : undefined}
         tabIndex={canAdopt ? 0 : undefined}
         onKeyDown={(e) => { if (canAdopt && (e.key === 'Enter' || e.key === ' ')) setSelectedAnswerId(isSelected ? null : answer.id); }}
       >
-        <div className="qdetail-answer-header">
-          {answerTitles[answer.ownerId]
-            ? <span className="qdetail-answer-avatar-title" aria-hidden="true" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg }}><img src={TITLE_ICONS[answerTitles[answer.ownerId]]} alt="" /></span>
-            : <span className="qdetail-answer-avatar" aria-hidden="true" />}
-          <strong className="qdetail-answer-nick">{nick}</strong>
-          {answerTitles[answer.ownerId] && <span className="qdetail-title-badge" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg, color: TITLE_COLORS[answerTitles[answer.ownerId]]?.text }}>{t('titles.names.' + answerTitles[answer.ownerId])}</span>}
-          {isThisAdopted && <span className="qdetail-adopted-tag">{t('answer.adopted')}</span>}
-          <button className="answer-reply-button" aria-label={t('ui.reply')} onClick={(event) => { event.stopPropagation(); setReplyTargetId(answer.id); setAnswerError(''); }}>{t('ui.reply')}</button>
-          {answer.ownerId === user.id && !isThisAdopted && <button className="answer-more-button" aria-label={t('ui.more')} onClick={(event) => { event.stopPropagation(); setAnswerMenuId(answerMenuId === answer.id ? null : answer.id); }}>⋮</button>}
+        {/* 헤더: 아바타 + 닉네임/날짜 + 우측 액션 */}
+        <div className="ans-header">
+          <div className="ans-avatar-wrap">
+            {answerTitles[answer.ownerId]
+              ? <span className="ans-avatar ans-avatar--title" aria-hidden="true" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg }}><img src={TITLE_ICONS[answerTitles[answer.ownerId]]} alt="" /></span>
+              : <span className="ans-avatar" aria-hidden="true"><img src={answerAvatarBg} alt="" /></span>}
+          </div>
+          <div className="ans-meta">
+            <div className="ans-meta-top">
+              <strong className="ans-nick">{nick}</strong>
+              {answerTitles[answer.ownerId] && <span className="qdetail-title-badge" style={{ background: TITLE_COLORS[answerTitles[answer.ownerId]]?.bg, color: TITLE_COLORS[answerTitles[answer.ownerId]]?.text }}>{t('titles.names.' + answerTitles[answer.ownerId])}</span>}
+              {answer.score != null && (
+                <span className="ans-score">
+                  <img className="ans-score-border" src={answerScoreBorder} alt="" />
+                  <span>✦ {answer.score}</span>
+                </span>
+              )}
+            </div>
+            <time className="ans-date">{createdDate}</time>
+          </div>
+          <div className="ans-actions">
+            {isThisAdopted && <img className="ans-adopted-check" src={answerAdoptedCheck} alt={t('answer.adopted')} />}
+            {isMyAnswer && !isThisAdopted && (
+              <button className="ans-more-btn" aria-label={t('ui.more')} onClick={(e) => { e.stopPropagation(); setAnswerMenuId(answerMenuId === answer.id ? null : answer.id); }}>
+                <img src={answerMoreDots} alt="" />
+              </button>
+            )}
+          </div>
         </div>
-        {isEditing ? <div className="answer-edit-box" onClick={(event) => event.stopPropagation()}><textarea value={editingAnswerDraft} onChange={(event) => setEditingAnswerDraft(event.target.value)} /><div><button onClick={() => saveAnswerEdit(answer)} disabled={!editingAnswerDraft.trim()}>{t('common.save')}</button><button onClick={() => setEditingAnswerId(null)}>{t('common.cancel')}</button></div></div> : <AnswerBody answer={answer} translation={contentTranslation} showOriginal={originalShown.has(answer.id)} onToggle={() => toggleOriginal(answer.id)} />}
-        {answerMenuId === answer.id && <div className="answer-menu" onClick={(event) => event.stopPropagation()}><button onClick={() => startAnswerEdit(answer)}>{t('ui.edit')}</button><button onClick={() => removeAnswer(answer)}>{t('ui.delete')}</button></div>}
+
+        {/* 본문 / 편집 */}
+        {isEditing
+          ? <div className="answer-edit-box" onClick={(e) => e.stopPropagation()}>
+              <textarea value={editingAnswerDraft} onChange={(e) => setEditingAnswerDraft(e.target.value)} />
+              <div>
+                <button onClick={() => saveAnswerEdit(answer)} disabled={!editingAnswerDraft.trim()}>{t('common.save')}</button>
+                <button onClick={() => setEditingAnswerId(null)}>{t('common.cancel')}</button>
+              </div>
+            </div>
+          : <AnswerBody answer={answer} translation={contentTranslation} showOriginal={originalShown.has(answer.id)} onToggle={() => toggleOriginal(answer.id)} />}
+
+        {/* 하단: 댓글 버튼 */}
+        <div className="ans-footer">
+          <button className="ans-reply-btn" onClick={(e) => { e.stopPropagation(); setReplyTargetId(answer.id); setAnswerError(''); }}>
+            <img src={answerMenuEdit} alt="" className="ans-reply-icon" />
+            {t('ui.reply')}
+          </button>
+        </div>
+
+        {/* 수정/삭제 메뉴 팝업 */}
+        {answerMenuId === answer.id && (
+          <div className="ans-menu" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => startAnswerEdit(answer)}>
+              <span>{t('ui.edit')}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button className="ans-menu-delete" onClick={() => removeAnswer(answer)}>
+              <span>{t('ui.delete')}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+        )}
       </article>
       {replies.map((reply) => renderAnswer(reply, depth + 1))}
     </div>;
@@ -198,10 +259,6 @@ export default function QuestionPage() {
 
   return (
     <div className="screen question-screen">
-      <header className="plain-header">
-        <BackButton onClick={() => navigate(-1)} />
-        <button className="more-button" onClick={() => setMenu(!menu)}>⋮</button>
-      </header>
 
       <div ref={questionScrollRef} className="screen-scroll question-scroll">
         {/* 배지 */}
@@ -209,6 +266,7 @@ export default function QuestionPage() {
           <em className="qdetail-cat">{categoryLabel(question.category, i18n.language)}</em>
           <em className="qdetail-pts">{question.rewardPoints}P</em>
           {question.authorLanguage && <em className="qdetail-lang">{question.authorLanguage.toUpperCase().slice(0,2)}</em>}
+          {isAdopted && <em className="qdetail-adopted-badge">✓ {t('qna.filter.adopted')}</em>}
           {question.urgent && <img className="qdetail-urgent-icon qdetail-urgent-end" src={composeUrgentIcon} alt={t('qna.filter.urgent')} />}
         </div>
 
@@ -222,7 +280,6 @@ export default function QuestionPage() {
         <div className="qdetail-meta-row">
           <span className="qdetail-answer-count">{t('ui.answers', { count: answers.length })}</span>
           {!isAdopted && <span className="qdetail-adopt-hint">{t('qna.adoptHint', { points: question.rewardPoints })}</span>}
-          {isAdopted && <span className="qdetail-adopted-badge">{t('qna.filter.adopted')}</span>}
         </div>
         <hr className="qdetail-divider" />
 
@@ -247,6 +304,11 @@ export default function QuestionPage() {
           >
             {t('ui.adoptBtn')}
           </button>
+        </div>
+      ) : isAdopted && isOwner ? (
+        <div className="qdetail-adopted-bar">
+          <span className="qdetail-adopted-bar-icon">✓</span>
+          <span>{t('ui.adoptedComplete')}</span>
         </div>
       ) : !isOwner || replyTargetId ? (
         <form className="answer-composer" onSubmit={submitAnswer}>
@@ -330,7 +392,7 @@ export default function QuestionPage() {
         </div>
       )}
 
-      {toast && <div className="toast" role="status">{toast}</div>}
+      {toast && <div className="toast toast-with-icon" role="status"><span className="toast-icon" aria-hidden="true">ⓘ</span>{toast}</div>}
     </div>
   );
 }

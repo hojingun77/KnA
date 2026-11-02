@@ -7,9 +7,8 @@ import { addRecentSearch, clearRecentSearches, getRecentSearches, removeRecentSe
 import useAuthStore from '@/store/authStore';
 import useAutoTranslation, { questionTitleItem as titleItem } from '@/hooks/useAutoTranslation';
 import BackButton from '@/components/ui/BackButton';
-import searchField from '@/assets/figma/search-field.svg';
-import searchIcon from '@/assets/figma/search-icon.svg';
 import searchRemove from '@/assets/figma/search-remove.svg';
+import searchIcon from '@/assets/figma/search-icon.svg';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 
 export default function SearchPage() {
@@ -48,16 +47,20 @@ export default function SearchPage() {
 
   return (
     <div className="screen search-screen">
-      <div className="search-toolbar">
-        <BackButton className="search-back" onClick={() => navigate(-1)} />
-        <form className="search-form" onSubmit={submit}>
-          <img className="search-field-bg" src={searchField} alt="" />
-          <button className="search-submit" type="submit" aria-label={t('ui.search')}>
-            <img src={searchIcon} alt="" />
-          </button>
-          <input autoFocus aria-label={t('ui.search')} placeholder={t('ui.searchKeywordPlaceholder')} value={query} onChange={(e) => setQuery(e.target.value)} />
-        </form>
-      </div>
+      <form className="search-inline-form" onSubmit={submit}>
+        <BackButton onClick={() => navigate(-1)} />
+        <div className="search-inline-field">
+          <img className="search-inline-icon" src={searchIcon} alt="" />
+          <input
+            autoFocus
+            className="search-inline-input"
+            aria-label={t('ui.search')}
+            placeholder={t('ui.searchKeywordPlaceholder')}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+      </form>
       <div className="search-content">
         {!term ? (
           <>
@@ -82,18 +85,16 @@ export default function SearchPage() {
           <>
             <h1 className="search-results-title">{t('ui.searchResults', { count: results.length })}</h1>
             {results.length ? results.map((question) => (
-              <button className="question-card" type="button" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+              <button className={`question-card${question.status === 'adopted' ? ' adopted' : ''}`} type="button" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+                {question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}
                 <span className="card-badges">
                   <em>{categoryLabel(question.category, i18n.language)}</em>
-                  {question.status === 'adopted'
-                    ? <em className="adopted-tag">✓ {t('qna.filter.adopted')}</em>
-                    : <em className="points-tag">{question.rewardPoints}P</em>}
+                  <em className="points-tag">{question.rewardPoints}P</em>
                   {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
                 </span>
                 <strong>{titleTranslation.text(titleItem(question))}</strong>
                 <small>
-                  <span>{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>
-                  {question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}
+                  <span className="card-meta-right">{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>
                 </small>
               </button>
             )) : <p className="search-empty">{t('ui.noSearchResults')}</p>}

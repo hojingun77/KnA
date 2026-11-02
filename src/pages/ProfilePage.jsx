@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import BrandHeader from '@/components/layout/BrandHeader';
 import { deviceLanguage } from '@/i18n';
 import { resetDemoData } from '@/data/demoRepository';
 import { updateDemoNickname, updateDemoPassword } from '@/data/demoRepository';
@@ -91,7 +90,7 @@ export default function ProfilePage() {
       setResetBusy(false);
     }
   }
-  return <div className="screen profile-screen"><BrandHeader /><div className="profile-content">
+  return <div className="screen profile-screen"><div className="profile-content">
     <div className="profile-card"><span className="profile-avatar" aria-hidden="true"><img src={avatarBackground} alt="" /><img src={avatarIcon} alt="" /></span><div><strong>{user.nickname}</strong><span>{user.email}</span></div></div>
     {SECTIONS.map((section) => <section className="profile-section" key={section.title}><h2>{t(`profile.${section.title}`)}</h2>{section.rows.map((row) => {
       const action = row === 'changeNickname' ? () => openSheet('nickname') : row === 'changePassword' ? () => openSheet('password') : row === 'changeTitle' ? () => navigate('/profile/titles') : null;
