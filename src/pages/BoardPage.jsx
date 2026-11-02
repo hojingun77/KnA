@@ -45,12 +45,11 @@ export default function BoardPage() {
                 ? <em className="adopted-tag">✓ {t('qna.filter.adopted')}</em>
                 : <em className="points-tag">{item.rewardPoints}P</em>}
               {item.authorLanguage && <em className="card-lang">{item.authorLanguage.toUpperCase().slice(0, 2)}</em>}
-              {item.urgent && <img className="card-urgent-icon" src={urgentIcon} alt={t('qna.filter.urgent')} />}
             </span>
             <strong>{item.title}</strong>
             <small>
               {t('ui.answers', { count: answerCounts[item.id] ?? 0 })}
-              <span>{new Date(item.createdAt).toLocaleDateString(i18n.language)}</span>
+              <span className="card-meta-right">{new Date(item.createdAt).toLocaleDateString(i18n.language)}{item.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}</span>
             </small>
           </button>
         )) : <div className="empty-card">{t('qna.noResults')}</div>}

@@ -48,10 +48,9 @@ export default function HomePage() {
               <em>{categoryLabel(question.category, i18n.language)}</em>
               <em className="points-tag">{question.rewardPoints}P</em>
               {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
-              {question.urgent && <img className="card-urgent-icon" src={urgentIcon} alt={t('qna.filter.urgent')} />}
             </span>
             <strong>{question.title}</strong>
-            <small>{DEMO_USERS.find((e) => e.id === question.ownerId)?.nickname ?? 'K&A'} · {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}</small>
+            <small><span>{DEMO_USERS.find((e) => e.id === question.ownerId)?.nickname ?? 'K&A'} · {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}</span>{question.urgent && <img className="card-urgent-icon-bottom" src={urgentIcon} alt={t('qna.filter.urgent')} />}</small>
           </button>
         )) : (
           <div className="empty-card">
