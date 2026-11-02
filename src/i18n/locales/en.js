@@ -43,6 +43,7 @@ const en = {
     },
     noResults: 'No questions match your criteria.',
     answerCount: (n) => `${n} answer${n !== 1 ? 's' : ''}`,
+    adoptHint: 'Accept & award {{points}}P',
   },
   question: {
     write: 'Ask a Question',
@@ -95,6 +96,11 @@ const en = {
     myAnswers: 'My Answers',
     points: 'Point Balance',
     settings: 'Settings',
+  },
+  titles: {
+    current: 'Current title', none: 'None selected', achieved: 'Titles earned {{count}} / {{total}}', average: 'Overall completion', applied: 'Applied', locked: 'Not applied',
+    progress: 'Title progress', hint: 'Tap an earned title to select it', goal: '{{count}} {{category}} answers', times: '', active: 'Active', achievedTag: 'Earned',
+    names: { visa: 'Einstein Visa', housing: 'Jimmy Cutter', medical: 'Morning Gale', finance: 'Warren Muffin', work: 'Nylon Musk', transport: 'Henji Ford', telecom: 'Bill Grates', life: 'Jordan Ramsay' },
   },
   report: {
     title: 'Report',

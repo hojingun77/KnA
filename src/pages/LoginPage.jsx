@@ -25,9 +25,9 @@ export default function LoginPage() {
     try {
       const user = await authenticateDemo(email, password);
       if (!user) { setError(t('auth.loginFailed')); return; }
-      setUser(user);
       await i18n.changeLanguage(user.uiLanguage);
-      navigate('/home', { replace: true });
+      navigate('/loading', { replace: true });
+      setUser(user);
     } catch { setError(t('common.error')); }
     finally { setBusy(false); }
   }

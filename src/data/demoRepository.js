@@ -7,6 +7,10 @@ const LEGACY_TEST_QUESTION_ID = '84da28f1-738a-4c45-a8cc-db75b96b634f';
 export async function ensureDemoData() {
   await inTransaction(['users', 'settings', 'pointLedger', 'pointSnapshots', 'questions', 'attachments'], 'readwrite', (tx) => {
     const questions = tx.objectStore('questions');
+    const snapshots = tx.objectStore('pointSnapshots');
+    snapshots.get('history-demo-cutetl123').onsuccess = (event) => {
+      if (event.target.result?.ownerId === 'demo-cutetl123') snapshots.delete('history-demo-cutetl123');
+    };
     questions.get(LEGACY_TEST_QUESTION_ID).onsuccess = (event) => {
       const question = event.target.result;
       if (question?.title !== '시연 동작 확인 질문' || question.ownerId !== 'demo-cutetl123' || question.deletedAt) return;
@@ -21,7 +25,6 @@ export async function ensureDemoData() {
       const users = tx.objectStore('users');
       const settings = tx.objectStore('settings');
       const ledger = tx.objectStore('pointLedger');
-      const snapshots = tx.objectStore('pointSnapshots');
       const createdAt = now();
       users.get(user.id).onsuccess = (event) => {
         const existing = event.target.result;
@@ -33,16 +36,16 @@ export async function ensureDemoData() {
       };
       const openingId = `opening-${user.id}`;
       ledger.get(openingId).onsuccess = (event) => {
-        if (!event.target.result) ledger.add({ id: openingId, ownerId: user.id, amount: 1000, kind: 'opening', createdAt });
+        if (!event.target.result) ledger.add({ id: openingId, ownerId: user.id, amount: user.openingPoints, kind: 'opening', createdAt });
       };
-      if (user.id === 'demo-cutetl123') {
-        const id = 'history-demo-cutetl123';
+      if (user.id === 'demo-ghwlsrns03') {
+        const id = 'history-demo-ghwlsrns03';
         snapshots.get(id).onsuccess = (event) => {
           if (!event.target.result) snapshots.add({ id, ownerId: user.id, monthlyPoints: 400, monthlyAdoptions: 3, createdAt, entries: [
-            { id: 'visa', amount: 150, label: '비자 질문 답변 채택', dateLabel: '어제' },
-            { id: 'telecom', amount: 100, label: '통신 질문 답변 채택', dateLabel: '10월 12일' },
-            { id: 'voucher', amount: -2000, label: '온누리 전환', dateLabel: '10월 11일' },
-            { id: 'medical', amount: 150, label: '의료 질문 답변 채택', dateLabel: '' },
+            { id: 'visa', amount: 150, label: '답변 채택됨 · 비자', dateLabel: '어제' },
+            { id: 'telecom', amount: 100, label: '답변 채택됨 · 통신', dateLabel: '10월 12일' },
+            { id: 'voucher', amount: -2000, label: '포인트 전환 신청', dateLabel: '10월 11일 · 온누리상품권' },
+            { id: 'medical', amount: 150, label: '답변 채택됨 · 의료', dateLabel: '' },
           ] });
         };
       }
@@ -51,14 +54,21 @@ export async function ensureDemoData() {
 }
 
 export async function authenticateDemo(email, password) {
-  const credential = DEMO_CREDENTIALS.find((entry) => entry.email === email && entry.password === password);
-  return credential ? readRecord('users', credential.id) : null;
+  const credential = DEMO_CREDENTIALS.find((entry) => entry.email === email);
+  if (!credential) return null;
+  if (credential.passwordHash) {
+    const bytes = new TextEncoder().encode(`${credential.salt}:${password}`);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    if (hash !== credential.passwordHash) return null;
+  } else if (credential.password !== password) return null;
+  return readRecord('users', credential.id);
 }
 
 export function getDemoUser(id) { return readRecord('users', id); }
 
 export async function getPointOverview(ownerId) {
-  const [entries, snapshot] = await Promise.all([readAll('pointLedger'), readRecord('pointSnapshots', 'history-demo-cutetl123')]);
+  const [entries, snapshot] = await Promise.all([readAll('pointLedger'), ownerId === 'demo-ghwlsrns03' ? readRecord('pointSnapshots', 'history-demo-ghwlsrns03') : Promise.resolve(null)]);
   const ledger = entries.filter((entry) => entry.ownerId === ownerId);
   return { balance: ledger.reduce((sum, entry) => sum + entry.amount, 0), ledger, snapshot: snapshot?.ownerId === ownerId ? snapshot : null };
 }

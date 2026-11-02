@@ -43,6 +43,7 @@ const ko = {
     },
     noResults: '조건에 맞는 질문이 없습니다.',
     answerCount: (n) => `답변 ${n}개`,
+    adoptHint: '채택하면 {{points}}P 지급',
   },
   question: {
     write: '질문 작성',
@@ -95,6 +96,11 @@ const ko = {
     myAnswers: '내 답변',
     points: '포인트 잔액',
     settings: '설정',
+  },
+  titles: {
+    current: '현재 선택한 칭호', none: '선택한 칭호 없음', achieved: '달성 칭호 {{count}} / {{total}}', average: '전체 평균 달성률', applied: '적용됨', locked: '미적용',
+    progress: '칭호별 달성률', hint: '달성한 칭호를 눌러 선택', goal: '{{category}} 답변 {{count}}회', times: '회', active: '적용중', achievedTag: '달성',
+    names: { visa: '아인슈타인 비자', housing: '지미 커터', medical: '모닝 게일', finance: '워렌 머핀', work: '나일론 머스크', transport: '헨지 포드', telecom: '빌 그레이츠', life: '조든 램지' },
   },
   report: {
     title: '신고',

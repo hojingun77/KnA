@@ -3,8 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { categoryLabel } from '@/constants/categories';
 import { blockQuestion, deleteQuestion, getQuestion, isBlocked, listAttachments } from '@/data/questionRepository';
+import { adoptAnswer, createAnswer, listAnswers } from '@/data/answerRepository';
 import { getDemoUser } from '@/data/demoRepository';
+import { DEMO_USERS } from '@/data/demoAccounts';
 import useAuthStore from '@/store/authStore';
+import composeUrgentIcon from '@/assets/figma/compose-urgent-icon.svg';
+import commentInputBg from '@/assets/figma/comment-input-bg.svg';
+import commentSend from '@/assets/figma/comment-send.svg';
 
 export default function QuestionPage() {
   const { questionId } = useParams();
@@ -13,25 +18,256 @@ export default function QuestionPage() {
   const navigate = useNavigate();
   const [question, setQuestion] = useState(undefined);
   const [attachments, setAttachments] = useState([]);
-  const [author, setAuthor] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  const [answerDraft, setAnswerDraft] = useState('');
+  const [sendingAnswer, setSendingAnswer] = useState(false);
+  const [answerError, setAnswerError] = useState('');
   const [menu, setMenu] = useState(false);
   const [report, setReport] = useState(false);
   const [reportedReason, setReportedReason] = useState('');
   const [toast, setToast] = useState('');
-  useEffect(() => { Promise.all([getQuestion(questionId), listAttachments(questionId), isBlocked(user.id, questionId)]).then(async ([item, files, blocked]) => { if (blocked) { navigate('/qna', { replace: true }); return; } setQuestion(item); setAttachments(files); setAuthor(item ? await getDemoUser(item.ownerId) : null); }); }, [questionId, user.id, navigate]);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  // adopt flow
+  const [selectedAnswerId, setSelectedAnswerId] = useState(null);
+  const [adoptOpen, setAdoptOpen] = useState(false);
+  const [adopting, setAdopting] = useState(false);
+  const cancelDeleteRef = useRef(null);
+  const cancelAdoptRef = useRef(null);
+  const questionScrollRef = useRef(null);
+
+  const isOwner = question && question.ownerId === user.id;
+  const isAdopted = question && question.status === 'adopted';
+  const canAdopt = isOwner && !isAdopted && answers.length > 0;
+  const selectedAnswer = answers.find((a) => a.id === selectedAnswerId) ?? null;
+  const selectedAnswererNick = selectedAnswer
+    ? (DEMO_USERS.find((u) => u.id === selectedAnswer.ownerId)?.nickname ?? user.nickname)
+    : '';
+
+  useEffect(() => {
+    Promise.all([getQuestion(questionId), listAttachments(questionId), listAnswers(questionId), isBlocked(user.id, questionId)])
+      .then(async ([item, files, savedAnswers, blocked]) => {
+        if (blocked) { navigate('/qna', { replace: true }); return; }
+        setQuestion(item);
+        setAttachments(files);
+        setAnswers(savedAnswers);
+      });
+  }, [questionId, user.id, navigate]);
+
+  useEffect(() => {
+    if (!deleteOpen) return;
+    cancelDeleteRef.current?.focus();
+    function onKeyDown(e) { if (e.key === 'Escape' && !deleting) setDeleteOpen(false); }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [deleteOpen, deleting]);
+
+  useEffect(() => {
+    if (!adoptOpen) return;
+    cancelAdoptRef.current?.focus();
+    function onKeyDown(e) { if (e.key === 'Escape' && !adopting) setAdoptOpen(false); }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [adoptOpen, adopting]);
+
   function share() { setMenu(false); setToast(t('ui.shared')); setTimeout(() => setToast(''), 2000); }
+
+  async function submitAnswer(event) {
+    event.preventDefault();
+    if (sendingAnswer || !answerDraft.trim()) return;
+    setSendingAnswer(true); setAnswerError('');
+    try {
+      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft });
+      setAnswers((cur) => [...cur, saved]);
+      setAnswerDraft('');
+      requestAnimationFrame(() => { if (questionScrollRef.current) questionScrollRef.current.scrollTop = questionScrollRef.current.scrollHeight; });
+    } catch { setAnswerError(t('ui.answerError')); }
+    finally { setSendingAnswer(false); }
+  }
+
+  async function removeOwnQuestion() {
+    if (deleting || !isOwner) return;
+    setDeleting(true); setDeleteError('');
+    try { await deleteQuestion(question); navigate('/qna', { replace: true }); }
+    catch { setDeleteError(t('common.error')); setDeleting(false); }
+  }
+
+  async function confirmAdopt() {
+    if (adopting || !selectedAnswer) return;
+    setAdopting(true);
+    try {
+      const { answer: adopted, question: updatedQ } = await adoptAnswer({ answer: selectedAnswer, question, rewarderId: user.id });
+      setQuestion(updatedQ);
+      setAnswers((cur) => cur.map((a) => a.id === adopted.id ? adopted : a));
+      setAdoptOpen(false);
+      navigate(`/qna/${question.id}/adopt-done`, {
+        replace: true,
+        state: { answer: adopted, question: updatedQ, answererNick: selectedAnswererNick },
+      });
+    } catch { setAdopting(false); }
+  }
+
   if (question === undefined) return <div className="screen center-message">{t('common.loading')}</div>;
   if (question === null) return <div className="screen center-message"><button onClick={() => navigate('/qna')}>{t('qna.noResults')}</button></div>;
-  return <div className="screen question-screen"><header className="plain-header"><button onClick={() => navigate(-1)} aria-label={t('common.back')}>❮</button><h1>{t('qna.board')}</h1><button className="more-button" onClick={() => setMenu(!menu)}>⋮</button></header>
-    <div className="screen-scroll question-scroll"><div className="card-badges"><em>{categoryLabel(question.category, i18n.language)}</em><em className="points-tag">{question.rewardPoints}P</em>{question.urgent && <em>{t('qna.filter.urgent')}</em>}</div><h2>{question.title}</h2><p className="question-meta">{author?.nickname ?? user.nickname} · {new Date(question.createdAt).toLocaleDateString(i18n.language)}</p><p className="question-body">{question.body}</p>
-      {attachments.map((attachment) => <AttachmentImage key={attachment.id} attachment={attachment} />)}
-      {question.ownerId === user.id && <div className="owner-actions"><button onClick={() => navigate(`/qna/${question.id}/edit`)}>{t('ui.edit')}</button><button onClick={async () => { if (window.confirm(t('ui.deleteConfirm'))) { await deleteQuestion(question); navigate('/qna', { replace: true }); } }}>{t('ui.delete')}</button></div>}
-      <section className="answer-placeholder"><h3>{t('ui.answers', { count: 0 })}</h3><p>{t('ui.emptyAnswers')}</p></section>
+
+  const adoptedAnswer = isAdopted ? answers.find((a) => a.id === question.adoptedAnswerId) : null;
+
+  return (
+    <div className="screen question-screen">
+      <header className="plain-header">
+        <button onClick={() => navigate(-1)} aria-label={t('common.back')}>❮</button>
+        <button className="more-button" onClick={() => setMenu(!menu)}>⋮</button>
+      </header>
+
+      <div ref={questionScrollRef} className="screen-scroll question-scroll">
+        {/* 배지 */}
+        <div className="qdetail-badges">
+          <em className="qdetail-cat">{categoryLabel(question.category, i18n.language)}</em>
+          <em className="qdetail-pts">{question.rewardPoints}P</em>
+          {question.urgent && <img className="qdetail-urgent-icon" src={composeUrgentIcon} alt={t('qna.filter.urgent')} />}
+        </div>
+
+        {/* 제목 / 본문 */}
+        <h2 className="qdetail-title">{question.title}</h2>
+        <p className="qdetail-body">{question.body}</p>
+        {attachments.map((a) => <AttachmentImage key={a.id} attachment={a} />)}
+
+        {/* 메타 행 */}
+        <div className="qdetail-meta-row">
+          <span className="qdetail-answer-count">{t('ui.answers', { count: answers.length })}</span>
+          {!isAdopted && <span className="qdetail-adopt-hint">{t('qna.adoptHint', { points: question.rewardPoints })}</span>}
+          {isAdopted && <span className="qdetail-adopted-badge">{t('qna.filter.adopted')}</span>}
+        </div>
+        <hr className="qdetail-divider" />
+
+        {/* 채택 안내 (질문자 & 미채택) */}
+        {canAdopt && (
+          <p className="qdetail-adopt-guide">{t('ui.adoptGuide')}</p>
+        )}
+
+        {/* 답변 목록 */}
+        <section className="qdetail-answers">
+          {answers.length ? answers.map((answer) => {
+            const nick = DEMO_USERS.find((u) => u.id === answer.ownerId)?.nickname ?? user.nickname;
+            const isSelected = selectedAnswerId === answer.id;
+            const isThisAdopted = answer.adopted;
+            return (
+              <article
+                key={answer.id}
+                className={`qdetail-answer-card${isSelected ? ' selected' : ''}${isThisAdopted ? ' adopted' : ''}`}
+                onClick={() => { if (canAdopt) setSelectedAnswerId(isSelected ? null : answer.id); }}
+                role={canAdopt ? 'button' : undefined}
+                tabIndex={canAdopt ? 0 : undefined}
+                onKeyDown={(e) => { if (canAdopt && (e.key === 'Enter' || e.key === ' ')) setSelectedAnswerId(isSelected ? null : answer.id); }}
+              >
+                <div className="qdetail-answer-header">
+                  <span className="qdetail-answer-avatar" aria-hidden="true" />
+                  <strong className="qdetail-answer-nick">{nick}</strong>
+                  {isThisAdopted && <span className="qdetail-adopted-tag">{t('answer.adopted')}</span>}
+                </div>
+                <p className="qdetail-answer-body">{answer.body}</p>
+              </article>
+            );
+          }) : <p className="qdetail-empty">{t('ui.emptyAnswers')}</p>}
+        </section>
+      </div>
+
+      {/* 하단 — 질문자: 답변 채택하기 버튼 / 답변자: 답변 입력창 */}
+      {isOwner && !isAdopted ? (
+        <div className="qdetail-adopt-bar">
+          <button
+            className="qdetail-adopt-btn"
+            disabled={!selectedAnswerId}
+            onClick={() => { if (selectedAnswerId) setAdoptOpen(true); }}
+          >
+            {t('ui.adoptBtn')}
+          </button>
+        </div>
+      ) : !isOwner ? (
+        <form className="answer-composer" onSubmit={submitAnswer}>
+          <div className="answer-input-wrap">
+            <img className="answer-input-bg" src={commentInputBg} alt="" />
+            <textarea
+              aria-label={t('ui.answerPlaceholder')}
+              placeholder={t('ui.answerPlaceholder')}
+              rows={1}
+              value={answerDraft}
+              onChange={(e) => setAnswerDraft(e.target.value)}
+            />
+            <button type="submit" aria-label={t('ui.sendAnswer')} disabled={sendingAnswer || !answerDraft.trim()}>
+              <img src={commentSend} alt="" />
+            </button>
+          </div>
+          {answerError && <p className="answer-input-error" role="alert">{answerError}</p>}
+        </form>
+      ) : null}
+
+      {/* ⋮ 메뉴 */}
+      {menu && (
+        <div className="question-menu">
+          {isOwner
+            ? <><button onClick={() => { setMenu(false); navigate(`/qna/${question.id}/edit`); }}>{t('ui.edit')}</button><button onClick={() => { setMenu(false); setDeleteError(''); setDeleteOpen(true); }}>{t('ui.delete')}</button></>
+            : <><button onClick={() => { setMenu(false); setReport(true); }}>{t('ui.report')}</button><button onClick={async () => { await blockQuestion(user.id, question.id); navigate('/qna', { replace: true }); }}>{t('ui.block')}</button></>
+          }
+          <button onClick={share}>{t('ui.share')}</button>
+        </div>
+      )}
+
+      {/* 채택 확인 모달 */}
+      {adoptOpen && selectedAnswer && (
+        <div className="modal-backdrop adopt-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget && !adopting) setAdoptOpen(false); }}>
+          <section className="adopt-modal" role="dialog" aria-modal="true" aria-labelledby="adopt-modal-title">
+            <h2 id="adopt-modal-title">{t('ui.adoptConfirmTitle')}</h2>
+            <p className="adopt-modal-desc">{t('ui.adoptConfirmDesc', { nick: selectedAnswererNick, points: question.rewardPoints })}</p>
+            <div className="adopt-modal-preview">
+              <p>{selectedAnswer.body}</p>
+            </div>
+            <button className="primary-action adopt-confirm-btn" onClick={confirmAdopt} disabled={adopting}>
+              {adopting ? t('common.loading') : t('ui.adoptConfirmBtn')}
+            </button>
+            <button ref={cancelAdoptRef} className="cancel-action" onClick={() => setAdoptOpen(false)} disabled={adopting}>
+              {t('common.cancel')}
+            </button>
+          </section>
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {deleteOpen && (
+        <div className="modal-backdrop delete-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget && !deleting) setDeleteOpen(false); }}>
+          <section className="delete-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-question-title">
+            <h2 id="delete-question-title">{t('ui.deleteConfirm')}</h2>
+            {deleteError && <p className="form-error" role="alert">{deleteError}</p>}
+            <div className="delete-actions">
+              <button ref={cancelDeleteRef} className="cancel-action" onClick={() => setDeleteOpen(false)} disabled={deleting}>{t('common.cancel')}</button>
+              <button className="delete-confirm-button" onClick={removeOwnQuestion} disabled={deleting}>{deleting ? t('common.loading') : t('ui.delete')}</button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* 신고 시트 */}
+      {report && (
+        <div className="modal-backdrop">
+          <div className="conversion-sheet">
+            <div className="sheet-handle" />
+            <h2>{t('ui.report')}</h2>
+            <div className="report-options">
+              {['abuse', 'ads', 'fraud', 'spam', 'illegal'].map((reason) => (
+                <button className={reportedReason === reason ? 'selected' : ''} key={reason} onClick={() => { setReportedReason(reason); setReport(false); }}>
+                  {t(`ui.reportReasons.${reason}`)}
+                </button>
+              ))}
+            </div>
+            <button className="cancel-action" onClick={() => setReport(false)}>{t('common.cancel')}</button>
+          </div>
+        </div>
+      )}
+
+      {toast && <div className="toast" role="status">{toast}</div>}
     </div>
-    {menu && <div className="question-menu"><button onClick={() => { setMenu(false); setReport(true); }}>{t('ui.report')}</button><button onClick={async () => { await blockQuestion(user.id, question.id); navigate('/qna', { replace: true }); }}>{t('ui.block')}</button><button onClick={share}>{t('ui.share')}</button></div>}
-    {report && <div className="modal-backdrop"><div className="conversion-sheet"><div className="sheet-handle" /><h2>{t('ui.report')}</h2><div className="report-options">{['abuse', 'ads', 'fraud', 'spam', 'illegal'].map((reason) => <button className={reportedReason === reason ? 'selected' : ''} key={reason} onClick={() => { setReportedReason(reason); setReport(false); }}>{t(`ui.reportReasons.${reason}`)}</button>)}</div><button className="cancel-action" onClick={() => setReport(false)}>{t('common.cancel')}</button></div></div>}
-    {toast && <div className="toast" role="status">{toast}</div>}
-  </div>;
+  );
 }
 
 function AttachmentImage({ attachment }) {

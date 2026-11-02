@@ -9,8 +9,12 @@ import ComposePage from '@/pages/ComposePage';
 import QuestionPage from '@/pages/QuestionPage';
 import PointsPage from '@/pages/PointsPage';
 import QuestionCompletePage from '@/pages/QuestionCompletePage';
+import AdoptDonePage from '@/pages/AdoptDonePage';
 import NotificationPage from '@/pages/NotificationPage';
 import ProfilePage from '@/pages/ProfilePage';
+import TitlePage from '@/pages/TitlePage';
+import LoadingPage from '@/pages/LoadingPage';
+import SearchPage from '@/pages/SearchPage';
 import { deviceLanguage } from '@/i18n';
 import { ensureDemoData, getDemoUser } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
@@ -67,22 +71,25 @@ function AppRoutes() {
   if (!ready) return <DeviceFrame><p className="center-message">{t('common.loading')}</p></DeviceFrame>;
   if (error) return <DeviceFrame><p className="center-message">{t('common.error')}</p></DeviceFrame>;
   if (!user) return <DeviceFrame login><LoginPage /></DeviceFrame>;
+  if (location.pathname === '/loading') return <DeviceFrame><LoadingPage /></DeviceFrame>;
 
-  const showNavigation = location.pathname === '/qna/new' || location.pathname.endsWith('/edit') || !/^\/qna\/[^/]+(?:\/complete)?$/.test(location.pathname);
+  const showNavigation = location.pathname !== '/search' && (location.pathname === '/qna/new' || location.pathname.endsWith('/edit') || !/^\/qna\/[^/]+(?:\/complete|\/adopt-done)?$/.test(location.pathname));
   const bottomBar = location.pathname === '/home' ? homeBottomBar : location.pathname === '/reward' ? rewardBottomBar : neutralBottomBar;
   return <DeviceFrame>
     <div className="app-shell">
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/qna" element={<BoardPage />} />
         <Route path="/qna/new" element={<ComposePage />} />
         <Route path="/qna/:questionId/edit" element={<ComposePage />} />
-        <Route path="/qna/:questionId/complete" element={<QuestionCompletePage />} />
+        <Route path="/qna/:questionId/complete" element={<QuestionCompletePage />} /><Route path="/qna/:questionId/adopt-done" element={<AdoptDonePage />} />
         <Route path="/qna/:questionId" element={<QuestionPage />} />
         <Route path="/reward" element={<PointsPage />} />
         <Route path="/notifications" element={<NotificationPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/titles" element={<TitlePage />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
       {showNavigation && <><nav className="bottom-nav" aria-label="Main"><img src={bottomBar} alt="" /><button className="bottom-home" onClick={() => navigate('/home')} aria-label={t('nav.home')} aria-current={location.pathname === '/home' ? 'page' : undefined} /><button className={`bottom-add${choose ? ' open' : ''}`} onClick={() => setChoose(!choose)} aria-label={t('nav.write')} /><button className="bottom-points" onClick={() => navigate('/reward')} aria-label={t('nav.points')} aria-current={location.pathname === '/reward' ? 'page' : undefined} /></nav>{choose && <div className="choose-overlay" onClick={() => setChoose(false)}><button className="choose-question" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna/new'); }}><img className="choice-bg" src={choiceQuestion} alt="" /><img className="choice-icon" src={choiceQuestionIcon} alt="" /><span>{t('nav.write')}</span></button><button className="choose-board" onClick={(event) => { event.stopPropagation(); setChoose(false); navigate('/qna'); }}><img className="choice-icon" src={choiceBoardIcon} alt="" /><span>{t('nav.board')}</span></button></div>}</>}

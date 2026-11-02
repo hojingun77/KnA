@@ -54,7 +54,7 @@ export default function ProfilePage() {
   }
   return <div className="screen profile-screen"><BrandHeader /><div className="profile-content">
     <div className="profile-card"><span className="profile-avatar" aria-hidden="true"><img src={avatarBackground} alt="" /><img src={avatarIcon} alt="" /></span><div><strong>{user.nickname}</strong><span>{user.email}</span></div></div>
-    {SECTIONS.map((section) => <section className="profile-section" key={section.title}><h2>{t(`profile.${section.title}`)}</h2>{section.rows.map((row) => <div className="profile-static-row" key={row}><span>{t(`profile.${row}`)}</span><img src={chevron} alt="" /></div>)}</section>)}
+    {SECTIONS.map((section) => <section className="profile-section" key={section.title}><h2>{t(`profile.${section.title}`)}</h2>{section.rows.map((row) => row === 'changeTitle' ? <button className="profile-static-row profile-link-row" key={row} onClick={() => navigate('/profile/titles')}><span>{t(`profile.${row}`)}</span><img src={chevron} alt="" /></button> : <div className="profile-static-row" key={row}><span>{t(`profile.${row}`)}</span><img src={chevron} alt="" /></div>)}</section>)}
     <button className="profile-logout" onClick={logout}>{t('auth.logout')}</button>
     <button className="profile-reset" onClick={resetAll} disabled={resetBusy}>{resetBusy ? t('profile.resetting') : resetPending ? t('profile.resetAgain') : t('profile.resetAll')}</button>
     {resetError && <p className="form-error" role="alert">{resetError}</p>}
