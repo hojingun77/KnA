@@ -172,7 +172,7 @@ button { cursor: pointer; }
 .home-scroll { padding: 20px 10px 105px; }
 .search-bar { display: block; width: 100%; height: 41px; padding: 0 13px; border: 1px solid #ccc; border-radius: 22px; text-align: left; color: #aaa; background: #f5f5f5; font-size: 14px; }
 .search-input { color: #111; outline: none; }
-.search-toolbar { display: flex; align-items: center; gap: 15px; height: 122px; padding: 60px 20px 12px 24px; }
+.search-toolbar { display: flex; align-items: center; gap: 15px; height: 82px; padding: 40px 20px 7px 24px; }
 .search-back { display: grid; place-items: center; flex: 0 0 16px; width: 16px; height: 26px; border: 0; background: transparent; }
 .search-back img { display: block; width: 10px; height: 19px; }
 .search-form { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; height: 50px; padding: 0 12px 0 14px; }
@@ -339,12 +339,12 @@ button { cursor: pointer; }
 
 /* Figma 공통 흐름 로딩 및 칭호 설정 */
 .loading-screen { position: relative; width: 100%; height: 100%; background: url('./assets/figma/login-gradient.svg') center / 100% 100% no-repeat; }
-.loading-brand { position: absolute; top: 324px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; }
-.loading-brand img:first-child { width: 60px; height: 60px; object-fit: contain; }
-.loading-brand img:nth-child(2) { width: 72px; height: 38px; object-fit: contain; margin-top: 24px; }
-.loading-brand p { margin-top: 3px; color: #725867; font-size: 17px; font-weight: 700; }
-.loading-bottom { position: absolute; left: 63px; right: 63px; bottom: 57px; text-align: center; color: #6b6879; font-size: 14px; font-weight: 600; }
-.loading-track { height: 7px; overflow: hidden; border-radius: 7px; background: #dadada; }
+.loading-brand { position: absolute; top: 310px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; }
+.loading-brand img:first-child { width: 70px; height: 74px; object-fit: contain; }
+.loading-brand-name { margin-top: 20px; font-size: 28px; font-weight: 700; color: #3d3250; letter-spacing: -0.3px; font-family: Inter, sans-serif; }
+.loading-brand p { margin-top: 6px; color: #6b5f78; font-size: 17px; font-weight: 500; }
+.loading-bottom { position: absolute; left: 56px; right: 56px; bottom: 90px; text-align: center; color: #6b6879; font-size: 14px; font-weight: 600; }
+.loading-track { height: 7px; overflow: hidden; border-radius: 7px; background: rgba(255,255,255,0.45); }
 .loading-track i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #bc4f7e 36%, #3676de); transition: width .5s; }
 .loading-bottom span { display: block; margin-top: 12px; }
 .titles-scroll { height: 100%; overflow-y: auto; padding: 16px 13px 122px; }
@@ -787,3 +787,69 @@ button { cursor: pointer; }
 .search-toolbar-qa .search-form input::placeholder { color: rgba(255,255,255,0.65); opacity: 1; }
 .search-toolbar-qa .search-field-bg { opacity: 0; }
 .search-toolbar-qa .search-submit img { filter: brightness(0) invert(1); }
+/* Page transition support - prevent interaction during transition */
+.screen[data-transitioning="true"] {
+  pointer-events: none;
+}
+
+/* ─── 페이지 슬라이드 전환 컨테이너 ───
+   app-shell의 flex column 안에서 남은 공간을 차지하고,
+   전환 중 두 페이지가 absolute로 겹칠 수 있도록 position:relative + clip
+   ─────────────────────────────────── */
+.transition-container {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden; /* 슬라이드 중 바깥으로 나가는 페이지를 클리핑 */
+}
+
+/* 각 페이지(motion.div) — .screen과 동일한 크기/배치 */
+.transition-page {
+  position: absolute;
+  inset: 0;       /* top/right/bottom/left: 0 → 컨테이너 꽉 채움 */
+  overflow: hidden;
+  background: #fff;
+}
+
+/* 검색 페이지 인라인 폼 */
+.search-inline-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 58px 16px 12px;
+  border-bottom: 1px solid #e6eaf0;
+  flex-shrink: 0;
+}
+/* 검색바 wrapper: 돋보기 아이콘 + 인풋 */
+.search-inline-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 38px;
+  background: #f5f7fa;
+  border: 1px solid #dce3eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.search-inline-field:focus-within { border-color: #7267c3; }
+.search-inline-icon {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.search-inline-input {
+  flex: 1;
+  height: 100%;
+  padding: 0 12px 0 32px;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  color: #111;
+  outline: none;
+}
+.search-inline-input::placeholder { color: #a5a5a5; }
+.search-screen .search-content { height: calc(100% - 107px); }

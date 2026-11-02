@@ -6,10 +6,8 @@ import { listQuestions } from '@/data/questionRepository';
 import { addRecentSearch, clearRecentSearches, getRecentSearches, removeRecentSearch } from '@/data/searchRepository';
 import useAuthStore from '@/store/authStore';
 import BackButton from '@/components/ui/BackButton';
-import searchField from '@/assets/figma/search-field.svg';
-import qaHeaderBg from '@/assets/figma/qa-header-bg.svg';
-import searchIcon from '@/assets/figma/search-icon.svg';
 import searchRemove from '@/assets/figma/search-remove.svg';
+import searchIcon from '@/assets/figma/search-icon.svg';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 
 export default function SearchPage() {
@@ -46,17 +44,20 @@ export default function SearchPage() {
 
   return (
     <div className="screen search-screen">
-      <div className="search-toolbar search-toolbar-qa">
-        <img className="search-toolbar-bg" src={qaHeaderBg} alt="" aria-hidden="true" />
-        <BackButton className="search-back" onClick={() => navigate(-1)} />
-        <form className="search-form" onSubmit={submit}>
-          <img className="search-field-bg" src={searchField} alt="" />
-          <button className="search-submit" type="submit" aria-label={t('ui.search')}>
-            <img src={searchIcon} alt="" />
-          </button>
-          <input autoFocus aria-label={t('ui.search')} placeholder={t('ui.searchKeywordPlaceholder')} value={query} onChange={(e) => setQuery(e.target.value)} />
-        </form>
-      </div>
+      <form className="search-inline-form" onSubmit={submit}>
+        <BackButton onClick={() => navigate(-1)} />
+        <div className="search-inline-field">
+          <img className="search-inline-icon" src={searchIcon} alt="" />
+          <input
+            autoFocus
+            className="search-inline-input"
+            aria-label={t('ui.search')}
+            placeholder={t('ui.searchKeywordPlaceholder')}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+      </form>
       <div className="search-content">
         {!term ? (
           <>

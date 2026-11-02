@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { authenticateDemo } from '@/data/demoRepository';
 import useAuthStore from '@/store/authStore';
 import logo from '@/assets/figma/login-logo.svg';
@@ -11,8 +10,8 @@ import apple from '@/assets/figma/apple-icon.svg';
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
+  const setShowLoading = useAuthStore((state) => state.setShowLoading);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -26,7 +25,8 @@ export default function LoginPage() {
       const user = await authenticateDemo(email, password);
       if (!user) { setError(t('auth.loginFailed')); return; }
       await i18n.changeLanguage(user.uiLanguage);
-      navigate('/loading', { replace: true });
+
+      setShowLoading(true);
       setUser(user);
     } catch { setError(t('common.error')); }
     finally { setBusy(false); }
