@@ -495,3 +495,7 @@ button { cursor: pointer; }
 .qdetail-title-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9px; white-space: nowrap; }
 .qdetail-answer-avatar-title { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; overflow: hidden; }
 .qdetail-answer-avatar-title img { width: 16px; height: 16px; object-fit: contain; }
+
+/* ── 목록 카드: 언어 태그 + 긴급 SVG 아이콘 ── */
+.card-lang { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px; background: #f0f0f0; color: #555; border: 1px solid #d8d8d8; }
+.card-urgent-icon { width: 16px; height: 14px; object-fit: contain; vertical-align: middle; filter: invert(15%) sepia(82%) saturate(3000%) hue-rotate(335deg) brightness(80%); }

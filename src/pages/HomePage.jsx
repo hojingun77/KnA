@@ -8,6 +8,7 @@ import useAuthStore from '@/store/authStore';
 import { DEMO_USERS } from '@/data/demoAccounts';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 import BrandHeader from '@/components/layout/BrandHeader';
+import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 
 export default function HomePage() {
   const { t, i18n } = useTranslation();
@@ -17,16 +18,48 @@ export default function HomePage() {
   const [points, setPoints] = useState(null);
   const [answerCounts, setAnswerCounts] = useState({});
   useEffect(() => {
-    Promise.all([listQuestions(user.id), getPointOverview(user.id), getAnswerCounts()]).then(([items, overview, counts]) => { setQuestions(items); setPoints(overview); setAnswerCounts(counts); });
+    Promise.all([listQuestions(user.id), getPointOverview(user.id), getAnswerCounts()])
+      .then(([items, overview, counts]) => { setQuestions(items); setPoints(overview); setAnswerCounts(counts); });
   }, [user.id]);
-  return <div className="screen home-screen">
-    <BrandHeader />
-    <div className="screen-scroll home-scroll">
-      <button className="search-bar" onClick={() => navigate('/search')}>⌕ &nbsp; {t('demo.search')}</button>
-      <button className="points-banner" onClick={() => navigate('/reward')}><span>{t('demo.myPoints')}<strong>{points ? points.balance.toLocaleString() : '…'}P</strong><small>{points?.snapshot ? t('ui.monthly') : ''}</small></span><span className="banner-link">{t('reward.transfer')} ❯</span></button>
-      <div className="category-grid">{CATEGORIES.map(([id]) => <button key={id} onClick={() => navigate(`/qna?category=${id}`)}><img className="category-symbol" src={CATEGORY_ICONS[id]} alt="" />{categoryLabel(id, i18n.language)}</button>)}</div>
-      <div className="section-heading"><h2>🔥 {t('home.liveQuestions')}</h2><button onClick={() => navigate('/qna')}>{t('ui.more')}</button></div>
-      {questions.length ? questions.slice(0, 3).map((question) => <button className="question-card" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}><span className="card-badges"><em>{categoryLabel(question.category, i18n.language)}</em><em className="points-tag">{question.rewardPoints}P</em></span><strong>{question.title}</strong><small>{DEMO_USERS.find((entry) => entry.id === question.ownerId)?.nickname ?? 'K&A'} · {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}</small></button>) : <div className="empty-card"><p>{t('home.noLiveQuestions')}</p><button onClick={() => navigate('/qna/new')}>{t('demo.start')}</button></div>}
+  return (
+    <div className="screen home-screen">
+      <BrandHeader />
+      <div className="screen-scroll home-scroll">
+        <button className="search-bar" onClick={() => navigate('/search')}>⌕ &nbsp; {t('demo.search')}</button>
+        <button className="points-banner" onClick={() => navigate('/reward')}>
+          <span>{t('demo.myPoints')}<strong>{points ? points.balance.toLocaleString() : '…'}P</strong><small>{points?.snapshot ? t('ui.monthly') : ''}</small></span>
+          <span className="banner-link">{t('reward.transfer')} ❯</span>
+        </button>
+        <div className="category-grid">
+          {CATEGORIES.map(([id]) => (
+            <button key={id} onClick={() => navigate(`/qna?category=${id}`)}>
+              <img className="category-symbol" src={CATEGORY_ICONS[id]} alt="" />
+              {categoryLabel(id, i18n.language)}
+            </button>
+          ))}
+        </div>
+        <div className="section-heading">
+          <h2>🔥 {t('home.liveQuestions')}</h2>
+          <button onClick={() => navigate('/qna')}>{t('ui.more')}</button>
+        </div>
+        {questions.length ? questions.slice(0, 3).map((question) => (
+          <button className="question-card" key={question.id} onClick={() => navigate(`/qna/${question.id}`)}>
+            <span className="card-badges">
+              <em>{categoryLabel(question.category, i18n.language)}</em>
+              <em className="points-tag">{question.rewardPoints}P</em>
+              {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
+              {question.urgent && <img className="card-urgent-icon" src={urgentIcon} alt={t('qna.filter.urgent')} />}
+            </span>
+            <strong>{question.title}</strong>
+            <small>{DEMO_USERS.find((e) => e.id === question.ownerId)?.nickname ?? 'K&A'} · {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}</small>
+          </button>
+        )) : (
+          <div className="empty-card">
+            <p>{t('home.noLiveQuestions')}</p>
+            <button onClick={() => navigate('/qna/new')}>{t('demo.start')}</button>
+          </div>
+        )}
+      </div>
     </div>
-  </div>;
+  );
 }
