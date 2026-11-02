@@ -233,6 +233,11 @@ export default function QuestionPage() {
             {t('ui.adoptBtn')}
           </button>
         </div>
+      ) : isAdopted && isOwner ? (
+        <div className="qdetail-adopted-bar">
+          <span className="qdetail-adopted-bar-icon">✓</span>
+          <span>{t('ui.adoptedComplete')}</span>
+        </div>
       ) : !isOwner || replyTargetId ? (
         <form className="answer-composer" onSubmit={submitAnswer}>
           <div className="answer-input-wrap">

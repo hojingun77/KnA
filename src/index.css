@@ -575,3 +575,8 @@ button { cursor: pointer; }
 .card-badges .card-lang { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px; background: #f0f0f0; color: #555; border: 1px solid #d8d8d8; }
 .card-meta-right { display: flex; align-items: center; gap: 6px; }
 .card-urgent-icon-bottom { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; filter: invert(15%) sepia(82%) saturate(3000%) hue-rotate(335deg) brightness(80%); }
+
+/* ── 채택 완료 상태 하단 바 ── */
+.qdetail-adopted-bar { position: absolute; z-index: 5; bottom: 0; left: 0; width: 100%; padding: 14px 16px 22px; background: #f0faf5; border-top: 1px solid #b7ecd4; display: flex; align-items: center; gap: 8px; }
+.qdetail-adopted-bar-icon { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #188754; color: white; font-size: 13px; flex-shrink: 0; }
+.qdetail-adopted-bar span:last-child { font-size: 14px; color: #188754; font-weight: 600; }

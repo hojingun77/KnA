@@ -71,7 +71,7 @@ export default function PointsPage() {
             <span className="history-details"><strong>{row.label}</strong>{row.date && <small>{row.date}</small>}</span>
             <b className={row.amount > 0 ? 'positive' : 'negative'}>{row.amount > 0 ? '+' : ''}{row.amount.toLocaleString()}</b>
           </div>
-        )) : <div className="empty-card">{t('demo.history')} 0</div>}
+        )) : <div className="empty-card"><p>{t('ui.pointsHistoryEmpty')}</p></div>}
       </div>
       {convert && (
         <div className="modal-backdrop">
