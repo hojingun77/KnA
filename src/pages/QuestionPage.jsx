@@ -17,6 +17,8 @@ import answerAdoptedCheck from '@/assets/figma/answer-adopted-check.svg';
 import answerMoreDots from '@/assets/figma/answer-more-dots.svg';
 import answerMenuEdit from '@/assets/figma/answer-menu-panel.svg';
 import answerScoreBorder from '@/assets/figma/answer-score-border.svg';
+import TranslateToggle from '@/components/ui/TranslateToggle';
+import useAutoTranslation from '@/hooks/useAutoTranslation';
 
 export default function QuestionPage() {
   const { questionId } = useParams();
@@ -33,8 +35,8 @@ export default function QuestionPage() {
   const { setHeader, clearHeader } = useHeaderStore();
   const [report, setReport] = useState(false);
   useEffect(() => {
-    setHeader({ title: t('answer.write'), onMore: () => setMenu((v) => !v), showIcons: false });
-    return () => clearHeader();
+    const owner = setHeader({ title: t('answer.write'), onMore: () => setMenu((v) => !v), showIcons: false });
+    return () => clearHeader(owner);
   }, [t]); // eslint-disable-line react-hooks/exhaustive-deps
   const [reportedReason, setReportedReason] = useState('');
   const [toast, setToast] = useState('');
@@ -53,6 +55,18 @@ export default function QuestionPage() {
   const cancelDeleteRef = useRef(null);
   const cancelAdoptRef = useRef(null);
   const questionScrollRef = useRef(null);
+  // 중국어·베트남어 화면: 질문 제목·본문과 모든 답변을 화면 언어로 자동 번역 (한 번에 묶어 요청)
+  const titleItem = question ? { kind: 'question_title', id: question.id, revision: question.revision, text: question.title, sourceLanguage: question.authorLanguage } : null;
+  const bodyItem = question ? { kind: 'question_body', id: question.id, revision: question.revision, text: question.body, sourceLanguage: question.authorLanguage } : null;
+  const contentTranslation = useAutoTranslation(question ? [titleItem, bodyItem, ...answers.map(answerItem)] : []);
+  // 원문 보기: 번역문 자리에 원문 글자만 바꿔 보여 준다 (질문은 제목+본문 함께, 답변은 각각). 화면을 나가면 초기화.
+  const [originalShown, setOriginalShown] = useState(() => new Set());
+  const toggleOriginal = (id) => setOriginalShown((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const shownText = (id, item) => (originalShown.has(id) ? item.text : contentTranslation.text(item));
 
   const isOwner = question && question.ownerId === user.id;
   const isAdopted = question && question.status === 'adopted';
@@ -101,7 +115,7 @@ export default function QuestionPage() {
     if (sendingAnswer || !answerDraft.trim()) return;
     setSendingAnswer(true); setAnswerError('');
     try {
-      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft, parentAnswerId: replyTargetId });
+      const saved = await createAnswer({ questionId: question.id, ownerId: user.id, body: answerDraft, parentAnswerId: replyTargetId, authorLanguage: i18n.language });
       setAnswers((cur) => [...cur, saved]);
       const mySettings = await getDemoUserSettings(user.id);
       if (mySettings?.selectedTitle) setAnswerTitles((cur) => ({ ...cur, [user.id]: mySettings.selectedTitle }));
@@ -215,7 +229,7 @@ export default function QuestionPage() {
                 <button onClick={() => setEditingAnswerId(null)}>{t('common.cancel')}</button>
               </div>
             </div>
-          : <p className="qdetail-answer-body">{answer.body}</p>}
+          : <AnswerBody answer={answer} translation={contentTranslation} showOriginal={originalShown.has(answer.id)} onToggle={() => toggleOriginal(answer.id)} />}
 
         {/* 하단: 댓글 버튼 */}
         <div className="ans-footer">
@@ -257,8 +271,9 @@ export default function QuestionPage() {
         </div>
 
         {/* 제목 / 본문 */}
-        <h2 className="qdetail-title">{question.title}</h2>
-        <p className="qdetail-body">{question.body}</p>
+        <h2 className="qdetail-title">{shownText('question', titleItem)}</h2>
+        <p className="qdetail-body">{shownText('question', bodyItem)}</p>
+        <TranslateToggle translation={contentTranslation} item={bodyItem} showOriginal={originalShown.has('question')} onToggle={() => toggleOriginal('question')} />
         {attachments.map((a) => <AttachmentImage key={a.id} attachment={a} />)}
 
         {/* 메타 행 */}
@@ -380,6 +395,18 @@ export default function QuestionPage() {
       {toast && <div className="toast toast-with-icon" role="status"><span className="toast-icon" aria-hidden="true">ⓘ</span>{toast}</div>}
     </div>
   );
+}
+
+function answerItem(answer) {
+  return { kind: 'answer_body', id: answer.id, revision: answer.revision, text: answer.body, sourceLanguage: answer.authorLanguage };
+}
+
+function AnswerBody({ answer, translation, showOriginal, onToggle }) {
+  const item = answerItem(answer);
+  return <>
+    <p className="qdetail-answer-body">{showOriginal ? item.text : translation.text(item)}</p>
+    <TranslateToggle translation={translation} item={item} showOriginal={showOriginal} onToggle={onToggle} />
+  </>;
 }
 
 function AttachmentImage({ attachment }) {

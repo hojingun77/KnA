@@ -2,6 +2,28 @@
 
 한국 거주 외국인의 생활·행정 Q&A를 시연하기 위한 React 앱입니다. IndexedDB 기반 두 데모 계정, 로그인, 질문 작성·조회, 포인트 화면을 1차 구현했습니다. 답변·채택·로컬 Node API·LLM 기능과 전체 디자인 검수는 아직 진행 중입니다.
 
+## 브랜치 (이 사본)
+
+- 이 사본의 작업 브랜치는 `codex/llm-prototype`(외부 LLM·sLLM 연동 프로토타입)으로 고정되어 있습니다. push·pull은 이 브랜치로만 합니다.
+- `main`은 안정 시연용 로컬 프로토타입이며 이 사본에서 변경하지 않습니다.
+- 클론 후 한 번 `git config core.hooksPath .githooks`를 실행하면 다른 브랜치로 가는 push가 차단됩니다.
+
+## 외부 연동 실행 (이 브랜치)
+
+번역(Google Translation 주, 로컬 sLLM 대체)과 질문 보상 분류(로컬 sLLM)를 쓰려면 터미널 두 개가 필요합니다. API 서버를 켜지 않으면 두 기능이 꺼지고 main과 같은 흐름으로 동작합니다.
+
+```sh
+# 최초 1회: .env 만들기 (Google 키는 비워 둬도 sLLM으로 번역됩니다)
+copy .env.example .env      # macOS/Linux: cp .env.example .env
+
+# Ollama 실행 상태에서 (모델: qwen2.5:7b)
+npm run api                 # 터미널 1: 로컬 Node API (127.0.0.1:8787)
+npm run dev                 # 터미널 2: 앱 (http://localhost:5174)
+```
+
+- 앱 주소가 `5174`이고 DB 이름도 `kna-llm-prototype`라서 main(5173)의 시연 데이터와 섞이지 않습니다.
+- 기준 문서: [번역 룰](docs/harness/TRANSLATION_RULES.md), [질문 보상 룰](docs/harness/QUESTION_REWARD_RULES.md).
+
 ## 개발 환경
 
 - Node.js 24, npm 사용. `.nvmrc`에 개발용 Node 버전을 지정했습니다.

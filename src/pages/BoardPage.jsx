@@ -6,6 +6,7 @@ import { categoryLabel } from '@/constants/categories';
 import { listQuestions } from '@/data/questionRepository';
 import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
+import useAutoTranslation, { questionTitleItem as titleItem } from '@/hooks/useAutoTranslation';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 
 export default function BoardPage() {
@@ -16,7 +17,7 @@ export default function BoardPage() {
   const [questions, setQuestions] = useState([]);
   const [answerCounts, setAnswerCounts] = useState({});
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: t('qna.board'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
+  useEffect(() => { const owner = setHeader({ title: t('qna.board'), onMore: null, showIcons: false }); return () => clearHeader(owner); }, [t]);
   useEffect(() => { Promise.all([listQuestions(user.id), getAnswerCounts()]).then(([items, counts]) => { setQuestions(items); setAnswerCounts(counts); }); }, [user.id]);
   const category = params.get('category') ?? 'all';
   const status = params.get('status') ?? 'all';
@@ -24,6 +25,8 @@ export default function BoardPage() {
     (category === 'all' || item.category === category) &&
     (status === 'all' || (status === 'urgent' ? item.urgent : status === 'adopted' ? item.status === 'adopted' : item.status !== 'adopted'))
   );
+  // 중국어·베트남어 화면: 목록 제목을 자동 번역
+  const titleTranslation = useAutoTranslation(filtered.map(titleItem));
   return (
     <div className="screen board-screen">
       <div className="screen-scroll board-scroll">
@@ -42,7 +45,7 @@ export default function BoardPage() {
               <em className="points-tag">{item.rewardPoints}P</em>
               {item.authorLanguage && <em className="card-lang">{item.authorLanguage.toUpperCase().slice(0, 2)}</em>}
             </span>
-            <strong>{item.title}</strong>
+            <strong>{titleTranslation.text(titleItem(item))}</strong>
             <small>
               {t('ui.answers', { count: answerCounts[item.id] ?? 0 })}
               <span className="card-meta-right">{new Date(item.createdAt).toLocaleDateString(i18n.language)}</span>

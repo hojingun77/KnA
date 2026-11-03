@@ -12,7 +12,7 @@ export default function TitlePage() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: null, onMore: null, showIcons: false }); return () => clearHeader(); }, []);
+  useEffect(() => { const owner = setHeader({ title: null, onMore: null, showIcons: false }); return () => clearHeader(owner); }, []);
   const progress = titleProgress(user.id);
   const unlocked = progress === TITLE_GOAL;
   const [selected, setSelected] = useState(unlocked ? DEFAULT_TITLE : null);

@@ -20,8 +20,10 @@ export default function AdoptDonePage() {
     return <div className="screen center-message"><button onClick={() => navigate('/qna')}>{t('qna.noResults')}</button></div>;
   }
 
-  const base = question.urgent ? Math.round(question.rewardPoints / 1.5) : question.rewardPoints;
-  const urgentBonus = question.urgent ? question.rewardPoints - base : 0;
+  // 등록 시 확정한 보상 스냅샷 기준으로 표시한다.
+  const urgentAtRegistration = question.isUrgentAtRegistration ?? question.urgent;
+  const base = question.basePoints ?? (urgentAtRegistration ? Math.round(question.rewardPoints / 1.5) : question.rewardPoints);
+  const urgentBonus = question.rewardPoints - base;
 
   return (
     <div className="screen adopt-done-screen">

@@ -1,6 +1,7 @@
-const DATABASE_NAME = 'kna-local-prototype';
-const VERSION = 2;
-const STORES = ['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks', 'notifications'];
+// codex/llm-prototype: main의 'kna-local-prototype' DB와 분리한다. 같은 브라우저에서 두 버전을 열어도 데이터가 섞이지 않는다.
+const DATABASE_NAME = 'kna-llm-prototype';
+const VERSION = 3;
+const STORES = ['users', 'settings', 'questions', 'answers', 'attachments', 'pointLedger', 'pointSnapshots', 'blocks', 'notifications', 'translations'];
 
 let databasePromise;
 

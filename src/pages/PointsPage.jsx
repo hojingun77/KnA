@@ -18,7 +18,7 @@ export default function PointsPage() {
   const navigate = useNavigate();
   const [overview, setOverview] = useState(null);
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: null, onMore: null, showIcons: true }); return () => clearHeader(); }, []);
+  useEffect(() => { const owner = setHeader({ title: null, onMore: null, showIcons: true }); return () => clearHeader(owner); }, []);
   const [convert, setConvert] = useState(false);
   const [amount, setAmount] = useState('1000');
   const [toast, setToast] = useState('');

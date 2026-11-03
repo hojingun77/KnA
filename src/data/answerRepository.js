@@ -27,7 +27,7 @@ export async function getAnswerCounts() {
   return counts;
 }
 
-export async function createAnswer({ questionId, ownerId, body, parentAnswerId = null }) {
+export async function createAnswer({ questionId, ownerId, body, parentAnswerId = null, authorLanguage = null }) {
   const content = body.trim();
   if (!content) throw new Error('Answer content is required');
   const question = await getQuestion(questionId);
@@ -39,7 +39,7 @@ export async function createAnswer({ questionId, ownerId, body, parentAnswerId =
   }
   const createdAt = new Date().toISOString();
   const answer = {
-    id: crypto.randomUUID(), questionId, ownerId, parentAnswerId, body: content,
+    id: crypto.randomUUID(), questionId, ownerId, parentAnswerId, body: content, authorLanguage,
     revision: 1, createdAt, updatedAt: createdAt, adopted: false,
   };
   await inTransaction(['answers', 'notifications'], 'readwrite', (tx) => {

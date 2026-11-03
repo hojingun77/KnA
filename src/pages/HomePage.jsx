@@ -5,6 +5,7 @@ import { getPointOverview } from '@/data/demoRepository';
 import { listQuestions } from '@/data/questionRepository';
 import { getAnswerCounts } from '@/data/answerRepository';
 import useAuthStore from '@/store/authStore';
+import useAutoTranslation, { questionTitleItem as titleItem } from '@/hooks/useAutoTranslation';
 import { CATEGORIES, CATEGORY_ICONS, categoryLabel } from '@/constants/categories';
 import urgentIcon from '@/assets/figma/compose-urgent-icon.svg';
 
@@ -19,6 +20,8 @@ export default function HomePage() {
     Promise.all([listQuestions(user.id), getPointOverview(user.id), getAnswerCounts()])
       .then(([items, overview, counts]) => { setQuestions(items); setPoints(overview); setAnswerCounts(counts); });
   }, [user.id]);
+  // 중국어·베트남어 화면: 보이는 질문 카드 제목을 자동 번역
+  const titleTranslation = useAutoTranslation(questions.slice(0, 3).map(titleItem));
   return (
     <div className="screen home-screen">
       <div className="screen-scroll home-scroll">
@@ -47,7 +50,7 @@ export default function HomePage() {
               <em className="points-tag">{question.rewardPoints}P</em>
               {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
             </span>
-            <strong>{question.title}</strong>
+            <strong>{titleTranslation.text(titleItem(question))}</strong>
             <small>
               {t('ui.answers', { count: answerCounts[question.id] ?? 0 })}
               <span className="card-meta-right">{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>

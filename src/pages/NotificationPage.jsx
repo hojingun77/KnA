@@ -12,7 +12,7 @@ export default function NotificationPage() {
   const user = useAuthStore((state) => state.user);
   const [notifications, setNotifications] = useState([]);
   const { setHeader, clearHeader } = useHeaderStore();
-  useEffect(() => { setHeader({ title: t('notification.title'), onMore: null, showIcons: false }); return () => clearHeader(); }, [t]);
+  useEffect(() => { const owner = setHeader({ title: t('notification.title'), onMore: null, showIcons: false }); return () => clearHeader(owner); }, [t]);
   useEffect(() => { listNotifications(user.id).then(setNotifications); }, [user.id]);
 
   async function openNotification(notification) {

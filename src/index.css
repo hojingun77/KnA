@@ -348,7 +348,7 @@ button { cursor: pointer; }
 .loading-track i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #bc4f7e 36%, #3676de); transition: width .5s; }
 .loading-bottom span { display: block; margin-top: 12px; }
 .titles-scroll { height: 100%; overflow-y: auto; padding: 16px 13px 122px; }
-.titles-summary { position: relative; min-height: 112px; padding: 12px 18px 18px; border-radius: 20px; background: linear-gradient(105deg, #a24261, #5f70ad); color: #fff; }
+.titles-summary { position: relative; min-height: 112px; padding: 12px 18px 18px; border-radius: 20px; background: linear-gradient(105deg, #a24261, #805987, #5f70ad, #a24261); background-size: 300% 100%; color: #fff; animation: gradient-flow 8s ease infinite; }
 .titles-summary small, .titles-summary strong, .titles-summary span:not(.titles-applied) { display: block; }
 .titles-summary small { font-size: 12px; }
 .titles-summary strong { margin-top: 3px; max-width: calc(100% - 125px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 23px; line-height: 1.2; }
@@ -414,7 +414,7 @@ button { cursor: pointer; }
 
 @keyframes mock-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes mock-fall { 0% { transform: translateY(-40px) rotate(0); opacity: 0; } 12% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(240px) rotate(300deg); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } .points-banner { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bottom-nav .bottom-add, .choose-overlay button, .conversion-sheet, .delete-dialog, .toast, .complete-confetti i, .loading-track i { animation: none; transition: none; } .complete-confetti i { display: none; } .points-banner, .titles-summary { animation: none; } }
 
 /* Figma 06_질문&게시판_선택: speech-bubble choices */
 .choose-overlay { justify-content: flex-start; gap: 65px; padding: 0 31px 6px 27px; }
@@ -849,3 +849,21 @@ button { cursor: pointer; }
 }
 .search-inline-input::placeholder { color: #a5a5a5; }
 .search-screen .search-content { height: calc(100% - 107px); }
+
+/* ── codex/llm-prototype: 사용자 콘텐츠 번역 ── */
+.translate-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 2px; }
+.translate-button { padding: 3px 10px; border: 1px solid #c9cce3; border-radius: 999px; background: #fff; color: #4c5394; font-size: 12px; font-weight: 600; cursor: pointer; }
+.translate-button:disabled { opacity: .6; }
+.translate-button.error { border-color: #e2a4b5; color: #a03b59; }
+.translate-meta { font-size: 11px; color: #8a8ea8; }
+
+/* ── codex/llm-prototype: 질문 보상 분류 ── */
+.reward-dialog { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.reward-dialog h2 { font-size: 16px; line-height: 1.45; }
+.reward-dialog p { font-size: 12.5px; color: #6b7090; line-height: 1.5; }
+.reward-dialog .primary-action, .reward-dialog .delete-actions { width: 100%; }
+.reward-spinner { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #e3e5f3; border-top-color: #b03a5b; animation: reward-spin .8s linear infinite; }
+@keyframes reward-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .reward-spinner { animation: none; } }
+.reward-ai-tag { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: #eef0f8; color: #4c5394; font-size: 11px; font-weight: 700; }
+.reward-default-tag { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: #f1f1f4; color: #6b7090; font-size: 11px; font-weight: 700; }

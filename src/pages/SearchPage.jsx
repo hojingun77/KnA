@@ -5,6 +5,7 @@ import { categoryLabel } from '@/constants/categories';
 import { listQuestions } from '@/data/questionRepository';
 import { addRecentSearch, clearRecentSearches, getRecentSearches, removeRecentSearch } from '@/data/searchRepository';
 import useAuthStore from '@/store/authStore';
+import useAutoTranslation, { questionTitleItem as titleItem } from '@/hooks/useAutoTranslation';
 import BackButton from '@/components/ui/BackButton';
 import searchRemove from '@/assets/figma/search-remove.svg';
 import searchIcon from '@/assets/figma/search-icon.svg';
@@ -31,6 +32,8 @@ export default function SearchPage() {
     [question.title, question.body, categoryLabel(question.category, i18n.language)]
       .some((value) => value?.toLocaleLowerCase(i18n.language).includes(term))
   ) : [];
+  // 중국어·베트남어 화면: 검색 결과 제목을 자동 번역
+  const titleTranslation = useAutoTranslation(results.map(titleItem));
 
   async function submit(event) {
     event.preventDefault();
@@ -89,7 +92,7 @@ export default function SearchPage() {
                   <em className="points-tag">{question.rewardPoints}P</em>
                   {question.authorLanguage && <em className="card-lang">{question.authorLanguage.toUpperCase().slice(0, 2)}</em>}
                 </span>
-                <strong>{question.title}</strong>
+                <strong>{titleTranslation.text(titleItem(question))}</strong>
                 <small>
                   <span className="card-meta-right">{new Date(question.createdAt).toLocaleDateString(i18n.language)}</span>
                 </small>
