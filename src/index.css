@@ -195,7 +195,7 @@ button { cursor: pointer; }
 .search-results-title { margin-bottom: 12px; }
 .search-content .question-card { margin: 10px 0; }
 .search-empty { margin-top: 28px; color: #8a94a3; text-align: center; font-size: 14px; }
-.points-banner { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 98px; margin-top: 14px; padding: 13px 20px; background: linear-gradient(105deg, #8c2036, #7a4a8a, #5a6da9, #8c2036); background-size: 300% 100%; border: 0; border-radius: 16px; color: white; text-align: left; animation: gradient-flow 8s ease infinite; }
+.points-banner { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 98px; margin-top: 14px; padding: 13px 20px; background: linear-gradient(105deg, #8c2036, #5a6da9); border: 0; border-radius: 16px; color: white; text-align: left; }
 .points-banner span:first-child { font-size: 13px; }
 .points-banner strong { display: block; font-size: 30px; line-height: 1.15; }
 .points-banner small { display: block; font-size: 12px; opacity: .9; margin-top: 3px; }
@@ -792,21 +792,17 @@ button { cursor: pointer; }
   pointer-events: none;
 }
 
-/* ─── 페이지 슬라이드 전환 컨테이너 ───
-   app-shell의 flex column 안에서 남은 공간을 차지하고,
-   전환 중 두 페이지가 absolute로 겹칠 수 있도록 position:relative + clip
-   ─────────────────────────────────── */
+/* ─── 페이지 슬라이드 전환 컨테이너 ─── */
 .transition-container {
   position: relative;
   flex: 1;
   min-height: 0;
-  overflow: hidden; /* 슬라이드 중 바깥으로 나가는 페이지를 클리핑 */
+  overflow: hidden;
 }
-
-/* 각 페이지(motion.div) — .screen과 동일한 크기/배치 */
+/* 두 레이어 공통: 컨테이너를 꽉 채우며 absolute 겹침 */
 .transition-page {
   position: absolute;
-  inset: 0;       /* top/right/bottom/left: 0 → 컨테이너 꽉 채움 */
+  inset: 0;
   overflow: hidden;
   background: #fff;
 }

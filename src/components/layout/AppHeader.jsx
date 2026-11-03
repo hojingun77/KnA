@@ -9,7 +9,7 @@ import profileIcon from '@/assets/figma/header-icon-profile.svg';
 import bellIcon from '@/assets/figma/header-icon-bell.svg';
 import qaMoreIcon from '@/assets/figma/qa-more-icon.svg';
 
-const ROOT_PATHS = new Set(['/home', '/profile', '/reward']);
+const ROOT_PATHS = new Set(['/home', '/reward']);
 const isRoot = (p) => ROOT_PATHS.has(p);
 
 export default function AppHeader() {
